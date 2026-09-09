@@ -28,6 +28,8 @@ export default defineConfig({
     optional_host_permissions: [
       'https://miruro.bz/*',
       'https://www.miruro.bz/*',
+      'https://*.theanimecommunity.com/*',
+      'https://theanimecommunity.com/*',
     ],
     action: {
       default_title: 'Vrate Browser Extension',

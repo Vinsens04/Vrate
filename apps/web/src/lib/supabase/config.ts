@@ -49,6 +49,10 @@ export function isGoogleAuthEnabled(): boolean {
 }
 
 
+export function normalizeSupabaseUrl(rawUrl: string): string {
+  return rawUrl.trim().replace(/\/rest\/v1\/?$/i, '').replace(/\/+$/, '');
+}
+
 /**
  * Returns validated public Supabase configuration.
  * Throws an explicit error if variables are missing or invalid.
@@ -67,7 +71,7 @@ export function getPublicSupabaseConfig(): PublicSupabaseConfig {
   }
 
   return {
-    url: result.data.NEXT_PUBLIC_SUPABASE_URL,
+    url: normalizeSupabaseUrl(result.data.NEXT_PUBLIC_SUPABASE_URL),
     anonKey: result.data.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   };
 }
@@ -90,7 +94,7 @@ export function getServerSupabaseConfig(): ServerSupabaseConfig {
   }
 
   return {
-    url: result.data.NEXT_PUBLIC_SUPABASE_URL,
+    url: normalizeSupabaseUrl(result.data.NEXT_PUBLIC_SUPABASE_URL),
     serviceRoleKey: result.data.SUPABASE_SERVICE_ROLE_KEY,
   };
 }

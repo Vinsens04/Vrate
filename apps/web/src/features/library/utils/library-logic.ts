@@ -1,4 +1,4 @@
-﻿import { LIBRARY_STATUSES, type LibraryStatus, type MediaType } from '@vrate/shared';
+import { LIBRARY_STATUSES, type LibraryStatus, type MediaType } from '@vrate/shared';
 import type {
   LibraryEntryItem,
   MediaItem,
@@ -295,21 +295,28 @@ export function mapDbEntryToViewModel(row: any): LibraryEntryItem {
 
   let latestEpisodeProgress: EpisodeProgressItem | null = null;
   if (Array.isArray(row.episode_progress) && row.episode_progress.length > 0) {
-    const ep = row.episode_progress[0];
-    latestEpisodeProgress = {
-      id: ep.id,
-      libraryEntryId: ep.library_entry_id,
-      seasonNumber: ep.season_number,
-      episodeNumber: ep.episode_number,
-      durationSeconds: ep.duration_seconds,
-      progressSeconds: ep.progress_seconds || 0,
-      progressPercent: ep.progress_percent,
-      isCompleted: ep.is_completed || false,
-      lastSourceName: ep.last_source_name,
-      lastSourceUrl: ep.last_source_url,
-      lastWatchedAt: ep.last_watched_at,
-      updatedAt: ep.updated_at,
-    };
+    const sorted = [...row.episode_progress].sort((a, b) => {
+      const timeA = new Date(a.last_watched_at || a.updated_at || a.created_at || 0).getTime();
+      const timeB = new Date(b.last_watched_at || b.updated_at || b.created_at || 0).getTime();
+      return timeB - timeA;
+    });
+    const ep = sorted[0];
+    if (ep) {
+      latestEpisodeProgress = {
+        id: ep.id,
+        libraryEntryId: ep.library_entry_id,
+        seasonNumber: ep.season_number,
+        episodeNumber: ep.episode_number,
+        durationSeconds: ep.duration_seconds,
+        progressSeconds: ep.progress_seconds || 0,
+        progressPercent: ep.progress_percent,
+        isCompleted: ep.is_completed || false,
+        lastSourceName: ep.last_source_name,
+        lastSourceUrl: ep.last_source_url,
+        lastWatchedAt: ep.last_watched_at,
+        updatedAt: ep.updated_at,
+      };
+    }
   }
 
   return {
@@ -331,6 +338,54 @@ export function mapDbEntryToViewModel(row: any): LibraryEntryItem {
       ? row.episode_progress.length
       : 0,
   };
+}
+
+/**
+ * Formats concise episode badge with progress for dashboard cards.
+ * Rules:
+ * - Movie: returns null (never show episode badge on movie).
+ * - Invalid episode data: returns null (never show E? or fake value).
+ * - Serial with season (> 1): S2E1
+ * - Anime / single season: E1
+ * - With progress: "E2 • 34%" or "S2E2 • 34%"
+ * - Completed: "E2 • Selesai"
+ */
+export function formatEpisodeBadge(
+  mediaType: MediaType,
+  progress: EpisodeProgressItem | null | undefined,
+  totalSeasons?: number | null
+): string | null {
+  if (mediaType === 'movie' || !progress) return null;
+
+  const epNum = progress.episodeNumber;
+  if (typeof epNum !== 'number' || isNaN(epNum) || epNum <= 0) {
+    return null;
+  }
+
+  const seasonNum = progress.seasonNumber;
+  const isMultiSeason =
+    (seasonNum !== null && seasonNum !== undefined && seasonNum > 1) ||
+    (totalSeasons !== null && totalSeasons !== undefined && totalSeasons > 1);
+
+  const prefix = isMultiSeason && seasonNum && seasonNum > 1
+    ? `S${seasonNum}E${epNum}`
+    : isMultiSeason && seasonNum === 1
+      ? `S1E${epNum}`
+      : `E${epNum}`;
+
+  if (progress.isCompleted) {
+    return `${prefix} • Selesai`;
+  }
+
+  if (
+    progress.progressPercent !== null &&
+    progress.progressPercent !== undefined &&
+    progress.progressPercent > 0
+  ) {
+    return `${prefix} • ${Math.round(progress.progressPercent)}%`;
+  }
+
+  return prefix;
 }
 
 

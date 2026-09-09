@@ -4,12 +4,22 @@
  */
 export function getAllowedOrigins(): Set<string> {
   const envOrigins = process.env.EXTENSION_ALLOWED_ORIGINS || '';
+  const set = new Set<string>();
+
   const list = envOrigins
     .split(',')
     .map((o) => o.trim())
     .filter((o) => o.length > 0);
 
-  return new Set(list);
+  for (const item of list) {
+    set.add(item);
+    // If the configured origin is a bare extension ID, also permit chrome-extension://<id>
+    if (!item.includes('://')) {
+      set.add(`chrome-extension://${item}`);
+    }
+  }
+
+  return set;
 }
 
 /**

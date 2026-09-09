@@ -1,14 +1,26 @@
 import { defaultEngine, extractPageContext } from '../src/detection/engine';
 import type { DetectedMediaCandidate } from '../src/detection/types';
+import { PlayerTracker } from '../src/tracking/player-tracker';
 
 export default defineContentScript({
-  // Only matched statically on localhost; Miruro is registered dynamically via optional_host_permissions
+  // Only matched statically on localhost; Miruro and player iframes are registered dynamically via optional_host_permissions
   matches: ['http://localhost:3000/*'],
+  allFrames: true,
   main() {
+    if (typeof window !== 'undefined') {
+      const win = window as unknown as { __VRATE_CONTENT_SCRIPT_INITIALIZED__?: boolean };
+      if (win.__VRATE_CONTENT_SCRIPT_INITIALIZED__) {
+        return;
+      }
+      win.__VRATE_CONTENT_SCRIPT_INITIALIZED__ = true;
+    }
+
+    const isTopFrame = typeof window !== 'undefined' && window === window.top;
     let lastUrl = window.location.href;
     let lastFingerprint = '';
     let playbackTimer: ReturnType<typeof setTimeout> | null = null;
     let currentCandidate: DetectedMediaCandidate | null = null;
+    let activeTracker: PlayerTracker | null = null;
 
     function clearPlaybackTimer() {
       if (playbackTimer !== null) {
@@ -111,51 +123,181 @@ export default defineContentScript({
         lastFingerprint = '';
         currentCandidate = null;
 
+        if (activeTracker) {
+          activeTracker.stop();
+          activeTracker = null;
+        }
+
         // Debounce slightly to allow dynamic page/DOM updates
         setTimeout(inspectPage, 400);
       }
     }
 
-    // 1. Initial page run
-    inspectPage();
+    if (isTopFrame) {
+      // 1. Initial page run on top frame
+      inspectPage();
 
-    // 2. SPA Navigation hooks
-    window.addEventListener('popstate', onLocationChange);
+      // 2. SPA Navigation hooks
+      window.addEventListener('popstate', onLocationChange);
 
-    try {
-      const originalPushState = history.pushState;
-      history.pushState = function (...args) {
-        const result = originalPushState.apply(this, args);
-        onLocationChange();
-        return result;
-      };
+      try {
+        const originalPushState = history.pushState;
+        history.pushState = function (...args) {
+          const result = originalPushState.apply(this, args);
+          onLocationChange();
+          return result;
+        };
 
-      const originalReplaceState = history.replaceState;
-      history.replaceState = function (...args) {
-        const result = originalReplaceState.apply(this, args);
-        onLocationChange();
-        return result;
-      };
-    } catch {
-      // Non-fatal if page sandbox forbids wrapping history methods
+        const originalReplaceState = history.replaceState;
+        history.replaceState = function (...args) {
+          const result = originalReplaceState.apply(this, args);
+          onLocationChange();
+          return result;
+        };
+      } catch {
+        // Non-fatal if page sandbox forbids wrapping history methods
+      }
+
+      // 3. Debounced MutationObserver for SPA changes (e.g. next/router, React Router)
+      let mutationDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+      const observer = new MutationObserver(() => {
+        if (window.location.href !== lastUrl) {
+          onLocationChange();
+        } else if (!currentCandidate) {
+          if (mutationDebounceTimer !== null) {
+            clearTimeout(mutationDebounceTimer);
+          }
+          mutationDebounceTimer = setTimeout(inspectPage, 1000);
+        }
+      });
+
+      if (document.body) {
+        observer.observe(document.body, { childList: true, subtree: true });
+      }
+    } else {
+      // Subframe / Player iframe (e.g. theanimecommunity.com): immediately search & bind to video
+      const iframeTracker = new PlayerTracker({
+        onCheckpoint: (payload) => {
+          if (chrome.runtime?.sendMessage) {
+            chrome.runtime.sendMessage(
+              {
+                type: 'TRACKING_CHECKPOINT',
+                payload: { ...payload, isIframe: true },
+              },
+              () => {
+                void chrome.runtime.lastError;
+              }
+            );
+          }
+        },
+        onPositionUpdate: (progressSeconds, durationSeconds, generation) => {
+          if (chrome.runtime?.sendMessage) {
+            chrome.runtime.sendMessage(
+              {
+                type: 'TRACKING_POSITION_UPDATE',
+                payload: { progressSeconds, durationSeconds, generation, isIframe: true },
+              },
+              () => {
+                void chrome.runtime.lastError;
+              }
+            );
+          }
+        },
+        onStatusChange: (status, details, generation) => {
+          if (chrome.runtime?.sendMessage) {
+            chrome.runtime.sendMessage(
+              {
+                type: 'TRACKING_STATUS_UPDATE',
+                payload: { status, details, generation, isIframe: true },
+              },
+              () => {
+                void chrome.runtime.lastError;
+              }
+            );
+          }
+        },
+      });
+
+      iframeTracker.start();
+      activeTracker = iframeTracker;
     }
 
-    // 3. Debounced MutationObserver for SPA changes (e.g. next/router, React Router)
-    let mutationDebounceTimer: ReturnType<typeof setTimeout> | null = null;
-    const observer = new MutationObserver(() => {
-      if (window.location.href !== lastUrl) {
-        onLocationChange();
-      } else if (!currentCandidate) {
-        // If not detected yet, check once if heading or video appears
-        if (mutationDebounceTimer !== null) {
-          clearTimeout(mutationDebounceTimer);
-        }
-        mutationDebounceTimer = setTimeout(inspectPage, 1000);
-      }
-    });
+    // 4. Listen for tracking attach/detach commands from background
+    if (typeof chrome !== 'undefined' && chrome.runtime?.onMessage) {
+      chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+        if (!message || typeof message !== 'object') return;
 
-    if (document.body) {
-      observer.observe(document.body, { childList: true, subtree: true });
+        if (message.type === 'TRACKING_PING') {
+          sendResponse({ alive: true });
+          return true;
+        }
+
+        if (message.type === 'TRACKING_ATTACH') {
+          if (activeTracker) {
+            activeTracker.stop();
+          }
+
+          const { initialProgressSeconds, durationSeconds, generation } = message.payload || {};
+          activeTracker = new PlayerTracker(
+            {
+              onCheckpoint: (payload) => {
+                if (chrome.runtime?.sendMessage) {
+                  chrome.runtime.sendMessage(
+                    {
+                      type: 'TRACKING_CHECKPOINT',
+                      payload: { ...payload, isIframe: !isTopFrame },
+                    },
+                    () => {
+                      void chrome.runtime.lastError;
+                    }
+                  );
+                }
+              },
+              onPositionUpdate: (progressSeconds, durationSeconds, gen) => {
+                if (chrome.runtime?.sendMessage) {
+                  chrome.runtime.sendMessage(
+                    {
+                      type: 'TRACKING_POSITION_UPDATE',
+                      payload: { progressSeconds, durationSeconds, generation: gen, isIframe: !isTopFrame },
+                    },
+                    () => {
+                      void chrome.runtime.lastError;
+                    }
+                  );
+                }
+              },
+              onStatusChange: (status, details, gen) => {
+                if (chrome.runtime?.sendMessage) {
+                  chrome.runtime.sendMessage(
+                    {
+                      type: 'TRACKING_STATUS_UPDATE',
+                      payload: { status, details, generation: gen, isIframe: !isTopFrame },
+                    },
+                    () => {
+                      void chrome.runtime.lastError;
+                    }
+                  );
+                }
+              },
+            },
+            initialProgressSeconds,
+            durationSeconds
+          );
+
+          const result = activeTracker.start(initialProgressSeconds, durationSeconds, generation || 0);
+          sendResponse({ success: true, ...result });
+          return true;
+        }
+
+        if (message.type === 'TRACKING_DETACH') {
+          if (activeTracker) {
+            activeTracker.stop();
+            activeTracker = null;
+          }
+          sendResponse({ success: true });
+          return true;
+        }
+      });
     }
   },
 });

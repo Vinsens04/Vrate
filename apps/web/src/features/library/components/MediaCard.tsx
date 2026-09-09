@@ -1,10 +1,10 @@
-﻿import React from 'react';
+import React from 'react';
 import Link from 'next/link';
 import type { LibraryEntryItem } from '../types/library-types';
 import { PosterImage } from './PosterImage';
 import { StatusBadge } from './StatusBadge';
 import { FavoriteButton } from './FavoriteButton';
-import { formatRelativeTime } from '../utils/library-logic';
+import { formatRelativeTime, formatEpisodeBadge } from '../utils/library-logic';
 
 interface MediaCardProps {
   entry: LibraryEntryItem;
@@ -13,6 +13,7 @@ interface MediaCardProps {
 export function MediaCard({ entry }: MediaCardProps) {
   const { media, status, rating, isFavorite, latestEpisodeProgress, lastWatchedAt, updatedAt } = entry;
   const timeDisplay = lastWatchedAt || updatedAt;
+  const episodeBadge = formatEpisodeBadge(media.mediaType, latestEpisodeProgress, media.totalSeasons);
 
   return (
     <article className="group relative min-w-0">
@@ -32,9 +33,9 @@ export function MediaCard({ entry }: MediaCardProps) {
         </div>
 
         <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 bg-gradient-to-t from-app-bg/90 to-transparent p-2 pt-10">
-          {latestEpisodeProgress ? (
+          {episodeBadge ? (
             <span className="bg-app-bg/90 px-2 py-1 font-mono text-[11px] font-medium text-app-text">
-              {latestEpisodeProgress.seasonNumber ? `S${latestEpisodeProgress.seasonNumber}:` : ''}E{latestEpisodeProgress.episodeNumber}
+              {episodeBadge}
             </span>
           ) : (
             <span />

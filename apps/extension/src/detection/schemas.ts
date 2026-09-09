@@ -122,6 +122,16 @@ export const detectionDismissCandidateMessageSchema = z.object({
 });
 
 /**
+ * Message from Popup to set auto-track preference.
+ */
+export const detectionSetAutoTrackMessageSchema = z.object({
+  type: z.literal('DETECTION_SET_AUTO_TRACK'),
+  payload: z.object({
+    enabled: z.boolean(),
+  }),
+});
+
+/**
  * Union of all detection messages processed by background router.
  */
 export const detectionMessageSchema = z.union([
@@ -132,6 +142,7 @@ export const detectionMessageSchema = z.union([
   detectionAddToLibraryMessageSchema,
   detectionCheckAutoPermissionMessageSchema,
   detectionDismissCandidateMessageSchema,
+  detectionSetAutoTrackMessageSchema,
 ]);
 
 export type DetectionMessage = z.infer<typeof detectionMessageSchema>;

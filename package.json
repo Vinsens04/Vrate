@@ -19,7 +19,8 @@
     "test:library": "node --experimental-strip-types --test apps/web/src/features/library/utils/library-logic.test.ts",
     "test:catalog": "node --experimental-strip-types --test apps/web/src/features/catalog/providers/tmdb/tmdb.test.ts apps/web/src/features/catalog/providers/anilist/anilist.test.ts apps/web/src/features/catalog/utils/catalog-logic.test.ts",
     "test:extension-auth": "node --experimental-strip-types --test apps/extension/src/auth/extension-auth.test.ts apps/web/src/lib/extension-auth/extension-cors-token.test.ts",
-    "test:detection": "node --experimental-strip-types --test apps/extension/src/detection/detection.test.ts apps/web/src/lib/extension-auth/extension-detection-api.test.ts"
+    "test:detection": "node --experimental-strip-types --test apps/extension/src/detection/detection.test.ts apps/web/src/lib/extension-auth/extension-detection-api.test.ts",
+    "test:tracking": "node --experimental-strip-types --test apps/extension/src/tracking/tracking.test.ts apps/web/src/lib/extension-auth/extension-tracking-api.test.ts"
   },
   "packageManager": "pnpm@12.3.4",
   "devDependencies": {

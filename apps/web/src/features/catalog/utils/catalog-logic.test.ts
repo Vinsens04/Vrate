@@ -156,6 +156,7 @@ test('isAllowedImageUrl: permits strictly whitelisted image domains and rejects 
   assert.equal(isAllowedImageUrl('https://image.tmdb.org/t/p/w342/poster.jpg'), true);
   assert.equal(isAllowedImageUrl('https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx1.jpg'), true);
   assert.equal(isAllowedImageUrl('https://img.anilist.co/banner.jpg'), true);
+  assert.equal(isAllowedImageUrl('https://media.kitsu.app/anime/46474/poster_image/small.jpeg'), true);
 
   // Rejected
   assert.equal(isAllowedImageUrl('https://malicious-site.com/image.jpg'), false);

@@ -12,6 +12,7 @@ apps/extension/.output/
 
 # Shared package build output (if any)
 packages/shared/dist/
+*.tsbuildinfo
 
 # Environment files
 .env

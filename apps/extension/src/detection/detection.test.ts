@@ -465,6 +465,8 @@ test('Security & Messaging: 28. Miruro permissions contain exact required host p
   assert.deepEqual(MIRURO_PERMISSIONS.origins, [
     'https://miruro.bz/*',
     'https://www.miruro.bz/*',
+    'https://theanimecommunity.com/*',
+    'https://*.theanimecommunity.com/*',
   ]);
 });
 

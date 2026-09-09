@@ -197,13 +197,125 @@ export interface AddExtensionLibraryResponse {
 }
 
 // ------------------------------------------------------------------------------
+// Video Progress Tracking & Watch Sessions Contracts (Step 8)
+// ------------------------------------------------------------------------------
+export const TRACKING_STATUSES = [
+  'waiting_video',
+  'video_detected',
+  'waiting_confirmation',
+  'tracking',
+  'paused',
+  'syncing',
+  'synced',
+  'offline_queued',
+  'unsupported_iframe',
+  'error',
+  'idle',
+] as const;
+export const trackingStatusSchema = z.enum(TRACKING_STATUSES);
+export type TrackingStatus = z.infer<typeof trackingStatusSchema>;
+
+export const TRACKING_EVENT_TYPES = [
+  'play',
+  'playing',
+  'pause',
+  'seeking',
+  'seeked',
+  'ratechange',
+  'timeupdate',
+  'ended',
+  'visibilitychange',
+  'pagehide',
+  'checkpoint',
+  'stop',
+] as const;
+export const trackingEventTypeSchema = z.enum(TRACKING_EVENT_TYPES);
+export type TrackingEventType = z.infer<typeof trackingEventTypeSchema>;
+
+export const startTrackingRequestSchema = z.object({
+  clientSessionId: z.string().uuid('clientSessionId harus format UUID valid'),
+  libraryEntryId: z.string().uuid('libraryEntryId harus format UUID valid'),
+  mediaId: z.string().uuid('mediaId harus format UUID valid').optional(),
+  episodeNumber: z.number().int().positive().nullable().optional(),
+  seasonNumber: z.number().int().nonnegative().nullable().optional(),
+  sourceName: z.string().min(1).max(64),
+  sourceDomain: z.string().min(1).max(255),
+  sourceUrl: z.string().max(500).nullable().optional(),
+  initialProgressSeconds: z.number().min(0).max(86400).default(0),
+  durationSeconds: z.number().positive().max(86400).nullable().optional(),
+});
+export type StartTrackingRequest = z.infer<typeof startTrackingRequestSchema>;
+
+export const checkpointTrackingRequestSchema = z.object({
+  clientSessionId: z.string().uuid('clientSessionId harus format UUID valid'),
+  libraryEntryId: z.string().uuid('libraryEntryId harus format UUID valid'),
+  episodeNumber: z.number().int().positive().nullable().optional(),
+  seasonNumber: z.number().int().nonnegative().nullable().optional(),
+  progressSeconds: z.number().min(0).max(86400),
+  durationSeconds: z.number().positive().max(86400).nullable().optional(),
+  watchedDeltaSeconds: z.number().min(0).max(300),
+  playbackRate: z.number().min(0.25).max(4.0).default(1.0),
+  eventType: trackingEventTypeSchema.default('checkpoint'),
+  isEnded: z.boolean().optional().default(false),
+});
+export type CheckpointTrackingRequest = z.infer<typeof checkpointTrackingRequestSchema>;
+
+export const stopTrackingRequestSchema = z.object({
+  clientSessionId: z.string().uuid('clientSessionId harus format UUID valid'),
+  libraryEntryId: z.string().uuid('libraryEntryId harus format UUID valid'),
+  episodeNumber: z.number().int().positive().nullable().optional(),
+  seasonNumber: z.number().int().nonnegative().nullable().optional(),
+  finalProgressSeconds: z.number().min(0).max(86400),
+  durationSeconds: z.number().positive().max(86400).nullable().optional(),
+  watchedDeltaSeconds: z.number().min(0).max(300).default(0),
+  reason: z.enum(['user_stop', 'episode_change', 'ended', 'tab_closed', 'dismissed']).default('user_stop'),
+});
+export type StopTrackingRequest = z.infer<typeof stopTrackingRequestSchema>;
+
+export interface TrackingOperationResponse {
+  success: boolean;
+  sessionId?: string;
+  isCompleted?: boolean;
+  progressPercent?: number;
+  progressSeconds?: number;
+  durationSeconds?: number | null;
+  message?: string;
+  error?: string;
+}
+
+export const AUTO_TRACK_CONFIRMATION_SECONDS = 30;
+export const AUTO_COMPLETE_DEFAULT_THRESHOLD_PERCENT = 90;
+
+export const markEpisodeCompletedRequestSchema = z.object({
+  libraryEntryId: z.string().uuid('libraryEntryId harus format UUID valid'),
+  episodeNumber: z.number().int().positive(),
+  seasonNumber: z.number().int().nonnegative().nullable().optional(),
+});
+export type MarkEpisodeCompletedRequest = z.infer<typeof markEpisodeCompletedRequestSchema>;
+
+export const deleteEpisodeProgressRequestSchema = z.object({
+  libraryEntryId: z.string().uuid('libraryEntryId harus format UUID valid'),
+  episodeNumber: z.number().int().positive(),
+  seasonNumber: z.number().int().nonnegative().nullable().optional(),
+});
+export type DeleteEpisodeProgressRequest = z.infer<typeof deleteEpisodeProgressRequestSchema>;
+
+export const correctEpisodeRequestSchema = z.object({
+  libraryEntryId: z.string().uuid('libraryEntryId harus format UUID valid'),
+  currentEpisodeNumber: z.number().int().positive(),
+  correctedEpisodeNumber: z.number().int().positive(),
+  seasonNumber: z.number().int().nonnegative().nullable().optional(),
+});
+export type CorrectEpisodeRequest = z.infer<typeof correctEpisodeRequestSchema>;
+
+// ------------------------------------------------------------------------------
 // Application Info & Helpers
 // ------------------------------------------------------------------------------
 export const APP_INFO = {
   name: 'Vrate',
   tagline: 'Track movies, TV series, and anime seamlessly',
   version: '0.1.0',
-  stage: 'Step 7: Media Detection, Miruro Adapter, & Library Confirmation',
+  stage: 'Step 8: Full Automatic Episode Tracking',
 } as const;
 
 

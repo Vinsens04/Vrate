@@ -12,14 +12,56 @@ import type {
 import { defaultEngine, extractPageContext } from './engine.ts';
 import { isMiruroHost } from './url.ts';
 
+import { handleCandidateAutoTracking } from '../tracking/tab-tracker-state.ts';
+
 // In-memory candidate cache mapped by tabId
 const activeTabCandidates = new Map<number, DetectedMediaCandidate>();
 
+export function getActiveTabCandidate(tabId: number): DetectedMediaCandidate | null {
+  return activeTabCandidates.get(tabId) || null;
+}
+
 export const MIRURO_PERMISSIONS = {
-  origins: ['https://miruro.bz/*', 'https://www.miruro.bz/*'],
+  origins: [
+    'https://miruro.bz/*',
+    'https://www.miruro.bz/*',
+    'https://theanimecommunity.com/*',
+    'https://*.theanimecommunity.com/*',
+  ],
 };
 
 export const MIRURO_CONTENT_SCRIPT_ID = 'vrate-miruro-detector';
+
+export const MIRURO_AUTO_TRACK_KEY = 'vrate_miruro_auto_track_enabled';
+
+/**
+ * Checks if auto-tracking for Miruro is enabled by the user. Default: true.
+ */
+export async function isMiruroAutoTrackEnabled(): Promise<boolean> {
+  if (typeof chrome === 'undefined' || !chrome.storage?.local) {
+    return true;
+  }
+  try {
+    const result = await chrome.storage.local.get(MIRURO_AUTO_TRACK_KEY);
+    return result[MIRURO_AUTO_TRACK_KEY] !== false;
+  } catch {
+    return true;
+  }
+}
+
+/**
+ * Updates the user's auto-track preference in extension storage.
+ */
+export async function setMiruroAutoTrackEnabled(enabled: boolean): Promise<void> {
+  if (typeof chrome === 'undefined' || !chrome.storage?.local) {
+    return;
+  }
+  try {
+    await chrome.storage.local.set({ [MIRURO_AUTO_TRACK_KEY]: enabled });
+  } catch {
+    // ignore
+  }
+}
 
 /**
  * Synchronizes dynamic content script registration for Miruro based on granted permissions.
@@ -45,8 +87,14 @@ export async function syncMiruroContentScriptRegistration(): Promise<void> {
       await chrome.scripting.registerContentScripts([
         {
           id: MIRURO_CONTENT_SCRIPT_ID,
-          matches: ['https://miruro.bz/*', 'https://www.miruro.bz/*'],
+          matches: [
+            'https://miruro.bz/*',
+            'https://www.miruro.bz/*',
+            'https://theanimecommunity.com/*',
+            'https://*.theanimecommunity.com/*',
+          ],
           js: ['content-scripts/content.js'],
+          allFrames: true,
           runAt: 'document_idle',
         },
       ]);
@@ -216,6 +264,13 @@ export async function handleDetectionMessage(
     activeTabCandidates.set(tabId, candidate);
     await updateTabBadge(tabId, true);
 
+    // Auto-track candidate if user enabled auto-tracking and host permission is granted
+    const autoTrack = await isMiruroAutoTrackEnabled();
+    const hasPerm = await hasMiruroPermission();
+    if (autoTrack && hasPerm) {
+      void handleCandidateAutoTracking(tabId, tabUrl, candidate);
+    }
+
     // Never return tokens, user profile, or private data to content script!
     return { success: true, acknowledged: true };
   }
@@ -248,6 +303,7 @@ export async function handleDetectionMessage(
       }
 
       const autoPermissionGranted = await hasMiruroPermission();
+      const autoTrackEnabled = await isMiruroAutoTrackEnabled();
 
       return {
         success: true,
@@ -256,6 +312,7 @@ export async function handleDetectionMessage(
         status: candidate ? 'detected' : 'idle',
         isMiruroPage,
         autoPermissionGranted,
+        autoTrackEnabled,
       };
     }
 
@@ -445,7 +502,14 @@ export async function handleDetectionMessage(
 
     case 'DETECTION_CHECK_AUTO_PERMISSION': {
       const granted = await hasMiruroPermission();
-      return { success: true, granted };
+      const autoTrackEnabled = await isMiruroAutoTrackEnabled();
+      return { success: true, granted, autoTrackEnabled };
+    }
+
+    case 'DETECTION_SET_AUTO_TRACK': {
+      const enabled = Boolean(message.payload?.enabled);
+      await setMiruroAutoTrackEnabled(enabled);
+      return { success: true, enabled };
     }
 
     default:

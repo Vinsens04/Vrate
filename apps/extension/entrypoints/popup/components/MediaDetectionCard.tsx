@@ -9,9 +9,12 @@ import {
   getCurrentDetectionState,
   resolveCandidateMedia,
   toggleMiruroPermission,
+  setAutoTrackingEnabled,
   triggerManualDetection,
 } from '../../../src/detection/client';
 import { sendExtensionMessage } from '../../../src/auth/messages';
+import { TrackingCard } from './TrackingCard';
+import { startActiveTabTracking } from '../../../src/tracking/client';
 
 export function MediaDetectionCard() {
   const [loading, setLoading] = useState(true);
@@ -21,6 +24,7 @@ export function MediaDetectionCard() {
   const [selectedItem, setSelectedItem] = useState<ResolvedMediaItem | null>(null);
   const [isMiruroPage, setIsMiruroPage] = useState(false);
   const [autoPermGranted, setAutoPermGranted] = useState(false);
+  const [autoTrackEnabled, setAutoTrackEnabled] = useState(true);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -37,6 +41,7 @@ export function MediaDetectionCard() {
 
         setIsMiruroPage(Boolean(state.isMiruroPage));
         setAutoPermGranted(Boolean(state.autoPermissionGranted));
+        setAutoTrackEnabled(state.autoTrackEnabled !== false);
 
         if (state.candidate) {
           setCandidate(state.candidate);
@@ -151,6 +156,17 @@ export function MediaDetectionCard() {
             libraryEntryId: res.entryId,
           });
         }
+
+        if (status === 'watching' && res.entryId) {
+          void startActiveTabTracking({
+            libraryEntryId: res.entryId,
+            mediaId: res.mediaId || selectedItem?.externalId || res.entryId,
+            episodeNumber: candidate?.episodeNumber,
+            seasonNumber: candidate?.seasonNumber,
+            sourceName: candidate?.sourceName || 'web',
+            sourceDomain: candidate?.sourceDomain || 'unknown',
+          });
+        }
       } else {
         setStatusMessage(res.error || res.message || 'Gagal menambahkan ke library.');
       }
@@ -161,14 +177,65 @@ export function MediaDetectionCard() {
     }
   }
 
-  async function handleToggleAutoPerm() {
+  async function handleToggleAutoTrack() {
     try {
-      const updated = await toggleMiruroPermission(autoPermGranted);
-      setAutoPermGranted(updated);
+      if (!autoPermGranted) {
+        const granted = await toggleMiruroPermission(false);
+        setAutoPermGranted(granted);
+        if (granted) {
+          await setAutoTrackingEnabled(true);
+          setAutoTrackEnabled(true);
+        }
+      } else {
+        const next = !autoTrackEnabled;
+        await setAutoTrackingEnabled(next);
+        setAutoTrackEnabled(next);
+      }
     } catch {
       // Permission prompt declined by user
     }
   }
+
+  const renderAutoTrackBox = () => {
+    const isFullyActive = autoPermGranted && autoTrackEnabled;
+
+    return (
+      <div className="auto-detect-box" style={{ marginTop: '10px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontWeight: 600, color: '#F1F0EA', fontSize: '11px' }}>
+            Auto Tracking Miruro {isMiruroPage ? '(Tab Miruro)' : ''}
+          </span>
+          <span
+            className="meta-tag"
+            style={{ color: isFullyActive ? '#5DBB8A' : '#A3A3A3' }}
+          >
+            {isFullyActive ? 'Aktif' : 'Nonaktif'}
+          </span>
+        </div>
+
+        <p style={{ color: '#888888', lineHeight: '1.4', fontSize: '11px', marginTop: '4px' }}>
+          {isFullyActive
+            ? 'Ekstensi otomatis mendeteksi episode, melacak pemutaran, dan menyimpan ke library setelah 30 detik pemutaran nyata.'
+            : !autoPermGranted
+            ? 'Berikan izin host untuk miruro.bz dan player iframe agar tracking otomatis dapat berjalan tanpa konfirmasi.'
+            : 'Fitur tracking otomatis dinonaktifkan sementara.'}
+        </p>
+
+        <button
+          type="button"
+          className="btn-secondary"
+          onClick={handleToggleAutoTrack}
+          style={{ fontSize: '11px', minHeight: '30px', marginTop: '6px', width: '100%' }}
+        >
+          {isFullyActive
+            ? 'Nonaktifkan Auto Tracking'
+            : !autoPermGranted
+            ? 'Aktifkan Izin & Auto Tracking'
+            : 'Aktifkan Auto Tracking'}
+        </button>
+      </div>
+    );
+  };
 
   const openDashboardDiscover = () => {
     void sendExtensionMessage({
@@ -359,6 +426,16 @@ export function MediaDetectionCard() {
               </button>
             )}
 
+            {/* Tracking Card: Active for either confirmed entries or auto-tracking session */}
+            <TrackingCard
+              libraryEntryId={selectedItem?.libraryEntryId || undefined}
+              mediaId={selectedItem?.externalId || candidate.externalId || undefined}
+              episodeNumber={candidate.episodeNumber}
+              seasonNumber={candidate.seasonNumber}
+              sourceName={candidate.sourceName}
+              sourceDomain={candidate.sourceDomain}
+            />
+
             <div style={{ display: 'flex', gap: '8px' }}>
               <button
                 type="button"
@@ -377,6 +454,8 @@ export function MediaDetectionCard() {
                 Cari di Vrate
               </button>
             </div>
+
+            {renderAutoTrackBox()}
           </div>
         </div>
       </div>
@@ -420,37 +499,8 @@ export function MediaDetectionCard() {
         </div>
       </div>
 
-      {/* Optional Host Permissions for Miruro */}
-      <div className="auto-detect-box">
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontWeight: 600, color: '#F1F0EA' }}>
-            Deteksi Otomatis Miruro {isMiruroPage ? '(Tab Miruro)' : ''}
-          </span>
-          <span
-            className="meta-tag"
-            style={{ color: autoPermGranted ? '#5DBB8A' : '#A3A3A3' }}
-          >
-            {autoPermGranted ? 'Aktif' : 'Nonaktif'}
-          </span>
-        </div>
-
-        <p style={{ color: '#888888', lineHeight: '1.4' }}>
-          {autoPermGranted
-            ? 'Ekstensi secara otomatis mendeteksi anime saat Anda membuka halaman tonton di miruro.bz.'
-            : 'Aktifkan deteksi otomatis di Miruro tanpa perlu menekan tombol deteksi manual.'}
-        </p>
-
-        <button
-          type="button"
-          className="btn-secondary"
-          onClick={handleToggleAutoPerm}
-          style={{ fontSize: '11px', minHeight: '32px' }}
-        >
-          {autoPermGranted
-            ? 'Nonaktifkan Deteksi Otomatis'
-            : 'Aktifkan Deteksi Otomatis di Miruro'}
-        </button>
-      </div>
+      {/* Auto-Tracking settings for Miruro */}
+      {renderAutoTrackBox()}
     </div>
   );
 }

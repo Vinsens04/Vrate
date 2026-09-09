@@ -13,6 +13,7 @@ export interface CurrentDetectionResult {
   status: 'idle' | 'detecting' | 'detected' | 'unrecognized';
   isMiruroPage?: boolean;
   autoPermissionGranted?: boolean;
+  autoTrackEnabled?: boolean;
   error?: string;
 }
 
@@ -76,4 +77,22 @@ export async function toggleMiruroPermission(currentlyGranted: boolean): Promise
   } else {
     return await requestMiruroPermission();
   }
+}
+
+export async function setAutoTrackingEnabled(enabled: boolean): Promise<boolean> {
+  const res = await sendExtensionMessage<{ success: boolean; enabled: boolean }>({
+    type: 'DETECTION_SET_AUTO_TRACK',
+    payload: { enabled },
+  } as any);
+  return Boolean(res?.success && res.enabled);
+}
+
+export async function checkAutoPermission(): Promise<{ granted: boolean; autoTrackEnabled: boolean }> {
+  const res = await sendExtensionMessage<{ success: boolean; granted: boolean; autoTrackEnabled: boolean }>({
+    type: 'DETECTION_CHECK_AUTO_PERMISSION',
+  } as any);
+  return {
+    granted: Boolean(res?.granted),
+    autoTrackEnabled: res?.autoTrackEnabled !== false,
+  };
 }

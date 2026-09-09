@@ -6,6 +6,8 @@ export const ALLOWED_IMAGE_HOSTNAMES = new Set([
   'image.tmdb.org',
   's4.anilist.co',
   'img.anilist.co',
+  'cdn.myanimelist.net',
+  'media.kitsu.app',
 ]);
 
 /**

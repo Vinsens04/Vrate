@@ -19,6 +19,16 @@ const nextConfig: NextConfig = {
         hostname: 'img.anilist.co',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'cdn.myanimelist.net',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'media.kitsu.app',
+        pathname: '/**',
+      },
     ],
   },
 };

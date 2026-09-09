@@ -5,6 +5,8 @@ import {
   initDetectionTabListeners,
   syncMiruroContentScriptRegistration,
 } from '../src/detection/messages';
+import { handleTrackingMessage } from '../src/tracking/messages';
+import { initTrackingTabListeners } from '../src/tracking/tab-tracker-state';
 
 export default defineBackground(() => {
   // Initialize storage access level and prepare client
@@ -19,6 +21,9 @@ export default defineBackground(() => {
 
   // Initialize tab navigation listeners for badge and candidate cleanup
   initDetectionTabListeners();
+
+  // Initialize tab tracking lifecycle listeners
+  initTrackingTabListeners();
 
   // Central runtime message listener
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -39,6 +44,21 @@ export default defineBackground(() => {
           sendResponse({
             success: false,
             error: err instanceof Error ? err.message : 'Kesalahan sistem deteksi background.',
+          });
+        });
+      return true;
+    }
+
+    // Dispatch tracking namespace
+    if (type.startsWith('TRACKING_')) {
+      handleTrackingMessage(message, sender)
+        .then((response) => {
+          sendResponse(response);
+        })
+        .catch((err) => {
+          sendResponse({
+            success: false,
+            error: err instanceof Error ? err.message : 'Kesalahan sistem tracking background.',
           });
         });
       return true;

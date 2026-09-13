@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useEffect, useTransition } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -49,30 +49,34 @@ export function LibrarySearch() {
   };
 
   return (
-    <div className="relative w-full sm:w-80">
+    <div className="group relative w-full sm:w-80">
       <label htmlFor="library-search-input" className="sr-only">
-        Cari dalam koleksi
+        Search within collection
       </label>
+
+      <div className="pointer-events-none absolute inset-y-0 left-4 flex items-center text-app-dim transition-colors group-focus-within:text-app-muted" aria-hidden="true">
+        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </div>
+
       <input
         id="library-search-input"
         type="search"
         value={searchTerm}
         onChange={e => setSearchTerm(e.target.value)}
-        placeholder="Cari judul"
+        placeholder="Search titles..."
         maxLength={100}
-        className="vr-control w-full pr-10"
+        className="h-10 w-full rounded-[12px] border border-[#252B36] bg-[#0D1117] py-2 pl-10 pr-10 text-sm text-app-text shadow-sm transition-all duration-200 placeholder:text-[#737C8B] focus:border-brand-primary/70 focus:bg-[#10141C] focus:outline-none focus:ring-2 focus:ring-brand-primary/15 disabled:cursor-not-allowed disabled:opacity-55"
       />
 
-      <div className="pointer-events-none absolute inset-y-0 right-9 flex items-center text-[11px] text-app-dim" aria-live="polite">
-        {isPending ? '...' : ''}
-      </div>
 
       {searchTerm.length > 0 && (
         <button
           type="button"
           onClick={handleClear}
-          className="absolute inset-y-0 right-0 flex min-w-10 items-center justify-center text-app-dim hover:text-app-text focus:outline-none"
-          aria-label="Hapus pencarian"
+          className="absolute inset-y-0 right-2 flex h-full items-center justify-center rounded-md px-2 text-app-dim transition-colors hover:text-app-text focus:outline-none"
+          aria-label="Clear search"
         >
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />

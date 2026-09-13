@@ -47,7 +47,7 @@ export async function loginAction(
   });
 
   if (!parseResult.success) {
-    const errorMsg = parseResult.error.issues[0]?.message || 'Input tidak valid';
+    const errorMsg = parseResult.error.issues[0]?.message || 'Invalid input';
     return { success: false, error: errorMsg };
   }
 
@@ -93,7 +93,7 @@ export async function registerAction(
   });
 
   if (!parseResult.success) {
-    const errorMsg = parseResult.error.issues[0]?.message || 'Input pendaftaran tidak valid';
+    const errorMsg = parseResult.error.issues[0]?.message || 'Invalid registration input';
     return { success: false, error: errorMsg };
   }
 
@@ -121,7 +121,7 @@ export async function registerAction(
         success: true,
         needsEmailConfirmation: true,
         email,
-        message: 'Akun Anda berhasil dibuat. Silakan periksa kotak masuk email Anda untuk mengonfirmasi pendaftaran.',
+        message: 'Your account has been created successfully. Please check your email inbox to confirm your registration.',
       };
     }
   } catch (err) {
@@ -146,7 +146,7 @@ export async function forgotPasswordAction(
   });
 
   if (!parseResult.success) {
-    const errorMsg = parseResult.error.issues[0]?.message || 'Email tidak valid';
+    const errorMsg = parseResult.error.issues[0]?.message || 'Invalid email';
     return { success: false, error: errorMsg };
   }
 
@@ -167,7 +167,7 @@ export async function forgotPasswordAction(
   // Consistent neutral response
   return {
     success: true,
-    message: 'Jika email tersebut terdaftar di sistem Vrate, kami telah mengirimkan instruksi dan tautan untuk mengatur ulang kata sandi Anda. Silakan periksa kotak masuk atau spam email Anda.',
+    message: 'If this email is registered with Vrate, we have sent instructions and a link to reset your password. Please check your inbox or spam folder.',
   };
 }
 
@@ -187,7 +187,7 @@ export async function resetPasswordAction(
   });
 
   if (!parseResult.success) {
-    const errorMsg = parseResult.error.issues[0]?.message || 'Kata sandi tidak valid';
+    const errorMsg = parseResult.error.issues[0]?.message || 'Invalid password';
     return { success: false, error: errorMsg };
   }
 

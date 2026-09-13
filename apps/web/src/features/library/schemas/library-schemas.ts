@@ -15,44 +15,44 @@ export const SORT_OPTIONS = [
 export const sortOptionSchema = z.enum(SORT_OPTIONS);
 
 export const updateStatusSchema = z.object({
-  entryId: z.string().uuid('ID entri tidak valid'),
+  entryId: z.string().uuid('Invalid entry ID'),
   status: libraryStatusSchema,
 });
 
 export const updateRatingSchema = z.object({
-  entryId: z.string().uuid('ID entri tidak valid'),
+  entryId: z.string().uuid('Invalid entry ID'),
   rating: z
-    .number({ message: 'Rating harus berupa angka' })
-    .min(0, 'Rating minimal 0')
-    .max(10, 'Rating maksimal 10')
+    .number({ message: 'Rating must be a number' })
+    .min(0, 'Rating must be at least 0')
+    .max(10, 'Rating cannot exceed 10')
     .refine(
       val => Math.round(val * 10) % 5 === 0,
-      'Rating harus merupakan kelipatan 0.5 (contoh: 7.0, 7.5, 8.0)'
+      'Rating must be a multiple of 0.5 (e.g. 7.0, 7.5, 8.0)'
     )
     .nullable(),
 });
 
 export const toggleFavoriteSchema = z.object({
-  entryId: z.string().uuid('ID entri tidak valid'),
+  entryId: z.string().uuid('Invalid entry ID'),
   isFavorite: z.boolean(),
 });
 
 export const updateNotesSchema = z.object({
-  entryId: z.string().uuid('ID entri tidak valid'),
+  entryId: z.string().uuid('Invalid entry ID'),
   notes: z
     .string()
-    .max(2000, 'Catatan tidak boleh melebihi 2.000 karakter')
+    .max(2000, 'Notes cannot exceed 2,000 characters')
     .nullable()
     .transform(val => (val && val.trim().length > 0 ? val.trim() : null)),
 });
 
 export const deleteEntrySchema = z.object({
-  entryId: z.string().uuid('ID entri tidak valid'),
+  entryId: z.string().uuid('Invalid entry ID'),
 });
 
 export const searchParamsSchema = z.object({
   status: z.string().optional(),
-  q: z.string().max(100, 'Query pencarian maksimal 100 karakter').optional(),
+  q: z.string().max(100, 'Search query cannot exceed 100 characters').optional(),
   sort: sortOptionSchema.optional(),
   page: z.coerce.number().int().min(1).default(1),
 });

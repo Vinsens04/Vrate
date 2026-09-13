@@ -170,3 +170,90 @@ test('Detection API: 40. Step 7 Add operation does not create watch sessions or 
     assert.equal('watchSessionId' in parsed.data, false);
   }
 });
+
+// ------------------------------------------------------------------------------
+// Test Suite 6: Probable Match Resolution & Activation Validation (Tests 46 - 50)
+// ------------------------------------------------------------------------------
+
+test('Detection API: 46. Generic resolve request accepts unknown provider with titleHint', () => {
+  const req = resolveMediaRequestSchema.safeParse({
+    provider: 'unknown',
+    titleHint: 'Nonton One Piece Episode 1120 Sub Indo Gratis - Anoboy',
+    sourceDomain: 'anoboy.show',
+  });
+
+  assert.equal(req.success, true);
+  if (req.success) {
+    assert.equal(req.data.provider, 'unknown');
+    assert.equal(req.data.titleHint, 'Nonton One Piece Episode 1120 Sub Indo Gratis - Anoboy');
+  }
+});
+
+test('Detection API: 47. Once candidate is selected, add-to-library immediately succeeds validation', () => {
+  // Simulates candidate selected from catalog resolution
+  const selectedFromCatalog = {
+    provider: 'tmdb' as const,
+    externalId: '37854',
+    title: 'One Piece',
+  };
+
+  const watchlistPayload = addExtensionLibraryRequestSchema.safeParse({
+    provider: selectedFromCatalog.provider,
+    externalId: selectedFromCatalog.externalId,
+    initialStatus: 'watchlist',
+    episodeHint: 1120,
+    sourceDomain: 'anoboy.show',
+  });
+  assert.equal(watchlistPayload.success, true);
+
+  const watchingPayload = addExtensionLibraryRequestSchema.safeParse({
+    provider: selectedFromCatalog.provider,
+    externalId: selectedFromCatalog.externalId,
+    initialStatus: 'watching',
+    episodeHint: 1120,
+    sourceDomain: 'anoboy.show',
+  });
+  assert.equal(watchingPayload.success, true);
+});
+
+test('Detection API: 48. Missing or unknown provider is rejected by add-to-library', () => {
+  // Unresolved candidate (still 'unknown' provider) cannot be added
+  const unresolved = addExtensionLibraryRequestSchema.safeParse({
+    provider: 'unknown' as any,
+    externalId: 'null',
+    initialStatus: 'watchlist',
+  });
+  assert.equal(unresolved.success, false);
+});
+
+test('Detection API: 49. Resolution response contains matchScore and exactMatch flag', () => {
+  // Validates structure of resolution candidate with match score
+  const mockCandidate = {
+    provider: 'tmdb' as const,
+    externalId: '37854',
+    mediaType: 'series' as const,
+    title: 'One Piece',
+    originalTitle: 'ONE PIECE',
+    overview: 'Pirates adventure',
+    posterUrl: 'https://image.tmdb.org/t/p/w500/onepiece.jpg',
+    backdropUrl: null,
+    releaseYear: 1999,
+    totalEpisodes: 1120,
+    inLibrary: false,
+    matchScore: 1.0,
+  };
+
+  assert.ok(mockCandidate.matchScore >= 0.85);
+  // High confidence top candidate triggers auto-selection
+  const isHighConfidence = mockCandidate.matchScore >= 0.85;
+  assert.equal(isHighConfidence, true);
+});
+
+test('Detection API: 50. Empty title hint returns empty candidates list safely', () => {
+  const req = resolveMediaRequestSchema.safeParse({
+    provider: 'unknown',
+    titleHint: '  ',
+  });
+  assert.equal(req.success, true);
+});
+

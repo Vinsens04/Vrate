@@ -73,7 +73,7 @@ export function sendExtensionMessage<T = ExtensionAuthResponse>(
 ): Promise<T> {
   return new Promise((resolve, reject) => {
     if (typeof chrome === 'undefined' || !chrome.runtime?.sendMessage) {
-      reject(new Error('Runtime messaging API browser extension tidak tersedia.'));
+      reject(new Error('Browser extension runtime messaging API unavailable.'));
       return;
     }
 
@@ -81,7 +81,7 @@ export function sendExtensionMessage<T = ExtensionAuthResponse>(
       chrome.runtime.sendMessage(message, (response) => {
         const lastError = chrome.runtime.lastError;
         if (lastError) {
-          reject(new Error(lastError.message || 'Gagal berkomunikasi dengan background service worker.'));
+          reject(new Error(lastError.message || 'Failed to communicate with background service worker.'));
           return;
         }
 

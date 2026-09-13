@@ -163,9 +163,9 @@ export async function executeCatalogSearch({
     tmdbItems = val.results;
   } else if (tmdbResult.status === 'rejected') {
     tmdbStatus.available = false;
-    tmdbStatus.error = tmdbResult.reason instanceof Error ? tmdbResult.reason.message : 'TMDB gagal merespon.';
+    tmdbStatus.error = tmdbResult.reason instanceof Error ? tmdbResult.reason.message : 'TMDB failed to respond.';
   } else if (!tmdbStatus.configured && (source === 'all' || source === 'tmdb')) {
-    tmdbStatus.error = 'TMDB API token belum dikonfigurasi.';
+    tmdbStatus.error = 'TMDB API token is not configured.';
   }
 
   let anilistItems: CatalogMedia[] = [];
@@ -177,7 +177,7 @@ export async function executeCatalogSearch({
     anilistItems = val.results;
   } else if (anilistResult.status === 'rejected') {
     anilistStatus.available = false;
-    anilistStatus.error = anilistResult.reason instanceof Error ? anilistResult.reason.message : 'AniList gagal merespon.';
+    anilistStatus.error = anilistResult.reason instanceof Error ? anilistResult.reason.message : 'AniList failed to respond.';
   }
 
   // Filter based on filterType

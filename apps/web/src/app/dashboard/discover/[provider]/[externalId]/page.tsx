@@ -19,7 +19,7 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const resolvedParams = await params;
   return {
-    title: `Detail Media (${resolvedParams.provider.toUpperCase()}) | Vrate`,
+    title: `Media Details (${resolvedParams.provider.toUpperCase()}) | Vrate`,
   };
 }
 
@@ -52,7 +52,7 @@ export default async function CatalogDetailPage({ params, searchParams }: PagePr
 
     return <CatalogDetailView media={media} />;
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Media tidak ditemukan atau gagal dimuat.';
+    const message = err instanceof Error ? err.message : 'Media not found or failed to load.';
     return (
       <div className="rounded-card border border-app-border bg-app-surface p-8 text-center max-w-lg mx-auto my-12 space-y-4">
         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-brand-warning/10 text-brand-warning mx-auto">
@@ -60,11 +60,11 @@ export default async function CatalogDetailPage({ params, searchParams }: PagePr
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
         </div>
-        <h2 className="text-lg font-semibold text-app-text">Gagal Memuat Detail Media</h2>
+        <h2 className="text-lg font-semibold text-app-text">Failed to Load Media Details</h2>
         <p className="text-xs text-app-muted">{message}</p>
         <div className="pt-2">
           <Link href="/dashboard/discover" className="vr-secondary text-xs px-4 py-2">
-            ← Kembali ke Pencarian Temukan
+            ← Back to Discover Search
           </Link>
         </div>
       </div>

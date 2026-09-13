@@ -32,7 +32,7 @@ test('registerSchema: fails on password mismatch', () => {
   if (!invalid.success) {
     const error = invalid.error.issues.find((i) => i.path.includes('confirmPassword'));
     assert.ok(error);
-    assert.match(error.message, /tidak cocok/);
+    assert.match(error.message, /not match/i);
   }
 });
 
@@ -76,27 +76,27 @@ test('getSafeRedirectPath: rejects external URLs and protocol-relative URLs', ()
 });
 
 // ------------------------------------------------------------------------------
-// Test 3: Auth Error Mapping to Bahasa Indonesia
+// Test 3: Auth Error Mapping to English
 // ------------------------------------------------------------------------------
 test('mapAuthError: maps known Supabase errors cleanly', () => {
   assert.equal(
     mapAuthError(new Error('Invalid login credentials')),
-    'Email atau kata sandi yang Anda masukkan salah.'
+    'Invalid email or password.'
   );
   assert.equal(
     mapAuthError(new Error('User already registered')),
-    'Email ini sudah terdaftar. Silakan masuk menggunakan akun Anda.'
+    'This email is already registered. Please sign in with your account.'
   );
   assert.equal(
     mapAuthError(new Error('Email not confirmed')),
-    'Email Anda belum dikonfirmasi. Silakan periksa tautan konfirmasi di kotak masuk email Anda.'
+    'Your email has not been confirmed yet. Please check the confirmation link in your inbox.'
   );
   assert.equal(
     mapAuthError(new Error('Password should be at least 6 characters')),
-    'Kata sandi harus terdiri dari minimal 8 karakter.'
+    'Password must be at least 8 characters.'
   );
   assert.equal(
     mapAuthError(null),
-    'Terjadi kesalahan. Silakan coba lagi.'
+    'An error occurred. Please try again.'
   );
 });

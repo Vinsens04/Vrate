@@ -3,8 +3,8 @@ import type { Metadata } from 'next';
 import { CreditsView } from '@/features/catalog/components/CreditsView';
 
 export const metadata: Metadata = {
-  title: 'Atribusi & Kredit Metadata | Vrate',
-  description: 'Informasi atribusi resmi TMDB dan AniList sebagai penyedia metadata media Vrate.',
+  title: 'Attribution & Metadata Credits | Vrate',
+  description: 'Official attribution information for TMDB and AniList as Vrate metadata providers.',
 };
 
 export default function CreditsPage() {

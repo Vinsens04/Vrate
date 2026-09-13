@@ -54,7 +54,7 @@ export function CatalogPoster({
           {title}
         </span>
         <span className="mt-1 text-[10px] uppercase tracking-wider text-app-dim">
-          Tidak ada poster
+          No poster available
         </span>
       </div>
     );

@@ -1,12 +1,12 @@
-﻿import type { Metadata } from 'next';
+import type { Metadata } from 'next';
 import { AuthCard } from '@/features/auth/components/AuthCard';
 import { LoginForm } from '@/features/auth/components/LoginForm';
 import { isGoogleAuthEnabled } from '@/lib/supabase/config';
 import { getSafeRedirectPath } from '@/features/auth/utils/safe-redirect';
 
 export const metadata: Metadata = {
-  title: 'Masuk - Vrate',
-  description: 'Masuk ke akun Vrate untuk melacak film, serial, dan anime.',
+  title: 'Sign In - Vrate',
+  description: 'Sign in to your Vrate account to track movies, series, and anime.',
 };
 
 interface LoginPageProps {
@@ -24,17 +24,17 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
   return (
     <AuthCard
-      title="Masuk"
-      subtitle="Lanjutkan mencatat watchlist, episode terakhir, dan rating pribadimu."
+      title="Sign In"
+      subtitle="Continue tracking your watchlist, last watched episodes, and personal ratings."
     >
       {params.error === 'unconfigured' && (
         <div
           role="alert"
           className="mb-5 border border-brand-warning/30 bg-brand-warning/10 p-3.5 text-xs leading-relaxed text-brand-warning"
         >
-          <strong className="font-semibold text-app-text">Konfigurasi Supabase belum ditemukan.</strong> Atur variabel{' '}
+          <strong className="font-semibold text-app-text">Supabase configuration not found.</strong> Set the variables{' '}
           <code className="rounded bg-black/40 px-1 py-0.5 font-mono text-[11px]">NEXT_PUBLIC_SUPABASE_URL</code>{' '}
-          dan anon key pada <code className="rounded bg-black/40 px-1 py-0.5 font-mono text-[11px]">apps/web/.env.local</code>.
+          and anon key in <code className="rounded bg-black/40 px-1 py-0.5 font-mono text-[11px]">apps/web/.env.local</code>.
         </div>
       )}
 
@@ -43,7 +43,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           role="alert"
           className="mb-5 border border-brand-danger/30 bg-brand-danger/10 p-3.5 text-xs leading-relaxed text-brand-danger"
         >
-          Tautan konfirmasi email tidak valid atau sudah kedaluwarsa. Coba masuk atau minta tautan baru.
+          Email confirmation link is invalid or has expired. Try signing in or request a new link.
         </div>
       )}
 

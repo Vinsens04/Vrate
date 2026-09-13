@@ -17,12 +17,12 @@ export const signInInputSchema = z.object({
   email: z
     .string()
     .trim()
-    .email('Format email tidak valid')
-    .max(255, 'Email maksimal 255 karakter'),
+    .email('Invalid email format')
+    .max(255, 'Email must be at most 255 characters'),
   password: z
     .string()
-    .min(1, 'Kata sandi tidak boleh kosong')
-    .max(255, 'Kata sandi maksimal 255 karakter'),
+    .min(1, 'Password cannot be empty')
+    .max(255, 'Password must be at most 255 characters'),
 });
 
 export type SignInInput = z.infer<typeof signInInputSchema>;
@@ -62,7 +62,7 @@ export const extensionMessageSchema = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('OPEN_URL'),
     payload: z.object({
-      url: z.string().min(1, 'URL tidak boleh kosong'),
+      url: z.string().min(1, 'URL cannot be empty'),
     }),
   }),
 ]);

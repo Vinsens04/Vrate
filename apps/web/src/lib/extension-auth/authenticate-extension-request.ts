@@ -44,7 +44,7 @@ export async function authenticateExtensionRequest(
   } catch {
     return {
       success: false,
-      error: 'Konfigurasi Supabase server belum siap.',
+      error: 'Supabase server configuration is not ready.',
       status: 503,
     };
   }
@@ -63,7 +63,7 @@ export async function authenticateExtensionRequest(
     if (error || !data.user) {
       return {
         success: false,
-        error: 'Token autentikasi tidak valid atau telah kedaluwarsa.',
+        error: 'Authentication token is invalid or expired.',
         status: 401,
       };
     }
@@ -96,8 +96,8 @@ export async function authenticateExtensionRequest(
     return {
       success: false,
       error: isNetwork
-        ? 'Layanan autentikasi Supabase tidak dapat dijangkau.'
-        : 'Gagal memverifikasi token autentikasi.',
+        ? 'Supabase authentication service unreachable.'
+        : 'Failed to verify authentication token.',
       status: isNetwork ? 503 : 401,
     };
   }

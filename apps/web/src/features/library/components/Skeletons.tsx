@@ -1,34 +1,48 @@
-﻿import React from 'react';
+import React from 'react';
 
 function PosterSkeleton() {
   return (
     <div className="space-y-3">
-      <div className="aspect-[2/3] border border-app-border bg-app-surface" />
-      <div className="h-3 w-2/3 bg-app-elevated" />
-      <div className="h-3 w-1/2 bg-app-elevated/70" />
+      <div className="aspect-[2/3] rounded-xl border border-app-border/70 bg-app-surface" />
+      <div className="h-3 w-3/4 rounded bg-app-elevated" />
+      <div className="h-3 w-1/2 rounded bg-app-elevated/60" />
     </div>
   );
 }
 
 export function DashboardOverviewSkeleton() {
   return (
-    <div className="space-y-10 animate-pulse">
-      <div className="border-b border-app-border pb-10">
-        <div className="h-3 w-20 bg-app-elevated" />
-        <div className="mt-5 h-16 w-52 bg-app-elevated" />
-        <div className="mt-5 h-4 w-full max-w-lg bg-app-elevated/70" />
-        <div className="mt-9 grid border-y border-app-border sm:grid-cols-5">
+    <div className="space-y-12 animate-pulse">
+      {/* Hero Skeleton */}
+      <div className="rounded-2xl border border-app-border/70 bg-app-surface/60 p-8">
+        <div className="h-3 w-28 rounded-full bg-app-elevated" />
+        <div className="mt-5 h-12 w-64 rounded-xl bg-app-elevated" />
+        <div className="mt-3 h-4 max-w-md rounded bg-app-elevated/60" />
+        <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="border-b border-app-border py-4 sm:border-b-0 sm:border-r sm:px-4 sm:last:border-r-0">
-              <div className="h-3 w-24 bg-app-elevated/70" />
-              <div className="mt-3 h-8 w-12 bg-app-elevated" />
-            </div>
+            <div key={i} className="h-20 rounded-xl border border-app-border/60 bg-app-elevated/50 p-4" />
           ))}
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6">
-        {[...Array(6)].map((_, i) => <PosterSkeleton key={i} />)}
+      {/* Continue Watching Skeleton */}
+      <div className="space-y-4">
+        <div className="h-6 w-48 rounded bg-app-elevated" />
+        <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+          {[...Array(6)].map((_, i) => (
+            <PosterSkeleton key={i} />
+          ))}
+        </div>
+      </div>
+
+      {/* Recently Added Skeleton */}
+      <div className="space-y-4">
+        <div className="h-6 w-40 rounded bg-app-elevated" />
+        <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+          {[...Array(6)].map((_, i) => (
+            <PosterSkeleton key={i} />
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -37,24 +51,28 @@ export function DashboardOverviewSkeleton() {
 export function LibraryGridSkeleton() {
   return (
     <div className="space-y-8 animate-pulse">
-      <div className="border-b border-app-border pb-7">
-        <div className="h-3 w-20 bg-app-elevated" />
-        <div className="mt-4 h-12 w-40 bg-app-elevated" />
-        <div className="mt-4 h-4 w-full max-w-xl bg-app-elevated/70" />
+      <div className="rounded-2xl border border-app-border/70 bg-app-surface/60 p-8">
+        <div className="h-3 w-24 rounded-full bg-app-elevated" />
+        <div className="mt-4 h-10 w-44 rounded-xl bg-app-elevated" />
+        <div className="mt-2 h-4 max-w-lg rounded bg-app-elevated/60" />
       </div>
 
-      <div className="space-y-5">
-        <div className="flex gap-4 overflow-hidden">
-          {[...Array(5)].map((_, i) => <div key={i} className="h-9 w-20 bg-app-elevated" />)}
+      <div className="space-y-4">
+        <div className="flex gap-2">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="h-8 w-20 rounded-lg bg-app-elevated" />
+          ))}
         </div>
-        <div className="flex flex-col gap-3 border-y border-app-border py-4 sm:flex-row sm:justify-between">
-          <div className="h-11 w-full max-w-80 bg-app-elevated" />
-          <div className="h-11 w-56 bg-app-elevated" />
+        <div className="flex flex-col gap-3 rounded-xl border border-app-border/70 bg-app-surface/40 p-3.5 sm:flex-row sm:justify-between">
+          <div className="h-10 w-full rounded-input bg-app-elevated sm:w-80" />
+          <div className="h-10 w-52 rounded-input bg-app-elevated" />
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-        {[...Array(12)].map((_, i) => <PosterSkeleton key={i} />)}
+        {[...Array(12)].map((_, i) => (
+          <PosterSkeleton key={i} />
+        ))}
       </div>
     </div>
   );
@@ -63,24 +81,23 @@ export function LibraryGridSkeleton() {
 export function LibraryDetailSkeleton() {
   return (
     <div className="space-y-10 animate-pulse">
-      <div className="h-4 w-72 bg-app-elevated" />
+      <div className="h-6 w-64 rounded-full bg-app-elevated" />
       <div className="grid gap-8 lg:grid-cols-[280px_1fr] xl:grid-cols-[320px_1fr]">
         <div className="space-y-6">
-          <div className="aspect-[2/3] border border-app-border bg-app-surface" />
-          <div className="space-y-3 border-y border-app-border py-4">
-            {[...Array(4)].map((_, i) => <div key={i} className="h-4 bg-app-elevated" />)}
+          <div className="aspect-[2/3] rounded-2xl border border-app-border/70 bg-app-surface" />
+          <div className="rounded-2xl border border-app-border/70 bg-app-surface/60 p-5 space-y-3">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="h-4 rounded bg-app-elevated" />
+            ))}
           </div>
         </div>
         <div className="space-y-8">
-          <div className="border-b border-app-border pb-8">
-            <div className="h-3 w-32 bg-app-elevated" />
-            <div className="mt-4 h-14 w-3/4 bg-app-elevated" />
+          <div className="rounded-2xl border border-app-border/70 bg-app-surface/60 p-8">
+            <div className="h-4 w-32 rounded bg-app-elevated" />
+            <div className="mt-4 h-12 w-3/4 rounded-xl bg-app-elevated" />
           </div>
-          <div className="h-28 max-w-3xl bg-app-elevated/70" />
-          <div className="grid gap-5 border-y border-app-border py-6 sm:grid-cols-2">
-            <div className="h-12 bg-app-elevated" />
-            <div className="h-12 bg-app-elevated" />
-          </div>
+          <div className="h-28 rounded-2xl border border-app-border/70 bg-app-surface/60 p-6" />
+          <div className="h-36 rounded-2xl border border-app-border/70 bg-app-surface/60 p-6" />
         </div>
       </div>
     </div>

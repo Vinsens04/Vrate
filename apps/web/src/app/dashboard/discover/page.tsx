@@ -4,8 +4,8 @@ import { DiscoverView } from '@/features/catalog/components/DiscoverView';
 import { isTmdbConfigured } from '@/features/catalog/providers/tmdb/client';
 
 export const metadata: Metadata = {
-  title: 'Temukan Media | Vrate',
-  description: 'Cari film, serial TV, dan anime dari TMDB dan AniList untuk ditambahkan ke library Anda.',
+  title: 'Discover Media | Vrate',
+  description: 'Search movies, TV series, and anime from TMDB and AniList to add to your library.',
 };
 
 export default function DiscoverPage() {

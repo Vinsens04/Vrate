@@ -1,4 +1,4 @@
-﻿import type { Metadata } from 'next';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
@@ -28,11 +28,11 @@ export async function generateMetadata({ params }: DetailPageProps): Promise<Met
   const { entryId } = await params;
   const data = await getLibraryEntryDetail(entryId);
   if (!data) {
-    return { title: 'Media Tidak Ditemukan - Vrate' };
+    return { title: 'Media Not Found - Vrate' };
   }
   return {
     title: `${data.entry.media.title} - Vrate`,
-    description: data.entry.media.overview || 'Detail media dalam library kamu.',
+    description: data.entry.media.overview || 'Media details in your library.',
   };
 }
 
@@ -65,121 +65,178 @@ export default async function LibraryEntryDetailPage({ params }: DetailPageProps
     formatMediaType(media.mediaType),
     media.releaseYear ? String(media.releaseYear) : null,
     media.runtimeMinutes ? formatDuration(media.runtimeMinutes) : null,
-    media.totalEpisodes ? `${media.totalEpisodes} episode` : null,
+    media.totalEpisodes ? `${media.totalEpisodes} episodes` : null,
   ].filter(Boolean);
 
   return (
     <div className="space-y-10">
-      <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm text-app-dim">
-        <Link href="/dashboard" className="transition hover:text-brand-primary">Overview</Link>
-        <span>/</span>
-        <Link href="/dashboard/library" className="transition hover:text-brand-primary">Library</Link>
-        <span>/</span>
-        <span className="truncate text-app-text">{media.title}</span>
+      {/* Breadcrumb Navigation */}
+      <nav aria-label="Breadcrumb" className="inline-flex items-center gap-2 rounded-full border border-app-border/70 bg-app-surface/60 px-4 py-1.5 text-xs text-app-dim backdrop-blur-md">
+        <Link href="/dashboard" className="transition-colors hover:text-brand-primary">Overview</Link>
+        <span className="text-app-dim/50">/</span>
+        <Link href="/dashboard/library" className="transition-colors hover:text-brand-primary">Library</Link>
+        <span className="text-app-dim/50">/</span>
+        <span className="max-w-[200px] truncate font-medium text-app-text sm:max-w-xs">{media.title}</span>
       </nav>
 
-      {media.backdropUrl && (
-        <div className="relative h-40 overflow-hidden border border-app-border sm:h-52" aria-hidden="true">
+      {/* Cinematic Hero Backdrop Banner */}
+      {media.backdropUrl ? (
+        <div className="relative -mx-4 h-64 overflow-hidden rounded-2xl border border-app-border/80 shadow-2xl sm:-mx-0 sm:h-80 md:h-96" aria-hidden="true">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={media.backdropUrl} alt="" className="h-full w-full object-cover opacity-45 grayscale" />
-          <div className="absolute inset-0 bg-gradient-to-r from-app-bg via-app-bg/55 to-app-bg/20" />
+          <img
+            src={media.backdropUrl}
+            alt=""
+            className="h-full w-full object-cover brightness-75 contrast-105 transition-transform duration-700 ease-out"
+          />
+          {/* Gradient Masks */}
+          <div className="absolute inset-0 bg-gradient-to-t from-app-bg via-app-bg/50 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-app-bg/90 via-transparent to-app-bg/30" />
         </div>
-      )}
+      ) : null}
 
       <section className="grid gap-8 lg:grid-cols-[280px_1fr] xl:grid-cols-[320px_1fr]">
+        {/* Left Column: Poster & Metadata Quick Facts */}
         <aside className="space-y-6">
-          <PosterImage posterUrl={media.posterUrl} title={media.title} mediaType={media.mediaType} className="w-full" />
+          <div className="group overflow-hidden rounded-2xl border border-app-border/80 shadow-2xl">
+            <PosterImage posterUrl={media.posterUrl} title={media.title} mediaType={media.mediaType} className="w-full" />
+          </div>
 
-          <div className="divide-y divide-app-border border-y border-app-border text-sm">
-            <div className="flex justify-between gap-4 py-3">
-              <span className="text-app-dim">Ditambahkan</span>
-              <span className="text-right text-app-text">{formatDate(entry.createdAt)}</span>
-            </div>
-            <div className="flex justify-between gap-4 py-3">
-              <span className="text-app-dim">Mulai</span>
-              <span className="text-right text-app-text">{formatDate(entry.startedAt)}</span>
-            </div>
-            <div className="flex justify-between gap-4 py-3">
-              <span className="text-app-dim">Selesai</span>
-              <span className="text-right text-app-text">{formatDate(entry.completedAt)}</span>
-            </div>
-            <div className="flex justify-between gap-4 py-3">
-              <span className="text-app-dim">Terakhir</span>
-              <span className="text-right text-app-text">{entry.lastWatchedAt ? formatRelativeTime(entry.lastWatchedAt) : '-'}</span>
+          <div className="rounded-2xl border border-app-border/70 bg-app-surface/60 p-5 shadow-sm backdrop-blur-md">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-app-dim">Quick Facts</h3>
+            <div className="mt-4 divide-y divide-app-border/60 text-xs">
+              <div className="flex justify-between gap-4 py-2.5">
+                <span className="text-app-dim">Added</span>
+                <span className="text-right font-medium text-app-text">{formatDate(entry.createdAt)}</span>
+              </div>
+              <div className="flex justify-between gap-4 py-2.5">
+                <span className="text-app-dim">Started</span>
+                <span className="text-right font-medium text-app-text">{formatDate(entry.startedAt)}</span>
+              </div>
+              <div className="flex justify-between gap-4 py-2.5">
+                <span className="text-app-dim">Completed</span>
+                <span className="text-right font-medium text-app-text">{formatDate(entry.completedAt)}</span>
+              </div>
+              <div className="flex justify-between gap-4 py-2.5">
+                <span className="text-app-dim">Last Watched</span>
+                <span className="text-right font-medium text-app-text">{entry.lastWatchedAt ? formatRelativeTime(entry.lastWatchedAt) : '-'}</span>
+              </div>
             </div>
           </div>
         </aside>
 
-        <div className="min-w-0 space-y-10">
-          <header className="border-b border-app-border pb-8">
+        {/* Right Column: Title, Synopsis, Status & History */}
+        <div className="min-w-0 space-y-8">
+          <header className="rounded-2xl border border-app-border/70 bg-app-surface/60 p-6 shadow-sm backdrop-blur-md sm:p-8">
             <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-              <div>
-                <p className="vr-label">{metaItems.join(' / ')}</p>
-                <h1 className="mt-3 text-balance text-4xl font-semibold leading-tight text-app-text sm:text-6xl">
+              <div className="space-y-3">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="rounded-full bg-brand-primary/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-brand-primary border border-brand-primary/20">
+                    {formatMediaType(media.mediaType)}
+                  </span>
+                  {media.releaseYear && (
+                    <span className="rounded-full border border-app-border bg-app-elevated px-2.5 py-1 text-[11px] font-medium text-app-muted">
+                      {media.releaseYear}
+                    </span>
+                  )}
+                  {media.runtimeMinutes && (
+                    <span className="rounded-full border border-app-border bg-app-elevated px-2.5 py-1 text-[11px] font-medium text-app-muted">
+                      {formatDuration(media.runtimeMinutes)}
+                    </span>
+                  )}
+                  {media.totalEpisodes && (
+                    <span className="rounded-full border border-app-border bg-app-elevated px-2.5 py-1 text-[11px] font-medium text-app-muted">
+                      {media.totalEpisodes} Episodes
+                    </span>
+                  )}
+                </div>
+
+                <h1 className="text-balance text-3xl font-bold tracking-tight text-app-text sm:text-5xl">
                   {media.title}
                 </h1>
+
                 {media.originalTitle && media.originalTitle !== media.title && (
-                  <p className="mt-3 text-sm italic text-app-dim">{media.originalTitle}</p>
+                  <p className="text-sm italic text-app-dim">{media.originalTitle}</p>
                 )}
               </div>
-              <FavoriteButton entryId={entry.id} isFavorite={entry.isFavorite} />
+
+              <div className="shrink-0">
+                <FavoriteButton entryId={entry.id} isFavorite={entry.isFavorite} />
+              </div>
             </div>
           </header>
 
+          {/* Synopsis */}
           {media.overview && (
-            <section aria-labelledby="synopsis-heading" className="max-w-3xl space-y-3">
-              <p id="synopsis-heading" className="vr-label">Sinopsis</p>
-              <p className="text-base leading-8 text-app-muted">{media.overview}</p>
+            <section aria-labelledby="synopsis-heading" className="rounded-2xl border border-app-border/70 bg-app-surface/60 p-6 shadow-sm backdrop-blur-md sm:p-8">
+              <h2 id="synopsis-heading" className="text-xs font-semibold uppercase tracking-wider text-app-dim">
+                Synopsis
+              </h2>
+              <p className="mt-3 text-sm leading-relaxed text-app-muted sm:text-base sm:leading-8">
+                {media.overview}
+              </p>
             </section>
           )}
 
-          <section aria-labelledby="status-heading" className="border-y border-app-border py-6">
-            <h2 id="status-heading" className="vr-label">Status dan rating</h2>
+          {/* Status & Rating */}
+          <section aria-labelledby="status-heading" className="rounded-2xl border border-app-border/70 bg-app-surface/60 p-6 shadow-sm backdrop-blur-md sm:p-8">
+            <h2 id="status-heading" className="text-xs font-semibold uppercase tracking-wider text-app-dim">
+              Collection Status & Rating
+            </h2>
             <div className="mt-5 grid gap-5 sm:grid-cols-2">
               <StatusSelect entryId={entry.id} currentStatus={entry.status} />
               <RatingControl entryId={entry.id} currentRating={entry.rating} />
             </div>
           </section>
 
-          <section aria-labelledby="notes-heading" className="space-y-4">
-            <h2 id="notes-heading" className="text-2xl font-semibold text-app-text">Catatan</h2>
-            <NotesForm entryId={entry.id} initialNotes={entry.notes} />
+          {/* Personal Notes */}
+          <section aria-labelledby="notes-heading" className="rounded-2xl border border-app-border/70 bg-app-surface/60 p-6 shadow-sm backdrop-blur-md sm:p-8">
+            <h2 id="notes-heading" className="text-lg font-semibold text-app-text">Personal Notes</h2>
+            <div className="mt-4">
+              <NotesForm entryId={entry.id} initialNotes={entry.notes} />
+            </div>
           </section>
 
+          {/* Series Episode Progress */}
           {media.mediaType === 'series' && (
-            <section aria-labelledby="episode-progress-heading" className="space-y-4">
-              <div className="flex items-end justify-between gap-4">
+            <section aria-labelledby="episode-progress-heading" className="rounded-2xl border border-app-border/70 bg-app-surface/60 p-6 shadow-sm backdrop-blur-md sm:p-8">
+              <div className="flex items-end justify-between gap-4 border-b border-app-border/60 pb-4">
                 <div>
-                  <p className="vr-label">Progres</p>
-                  <h2 id="episode-progress-heading" className="mt-2 text-2xl font-semibold text-app-text">
-                    Episode
+                  <p className="vr-label">Progress</p>
+                  <h2 id="episode-progress-heading" className="mt-1 text-xl font-semibold text-app-text">
+                    Episode Progress
                   </h2>
                 </div>
-                <span className="font-mono text-xs text-app-dim">{episodeProgressList.length} tercatat</span>
+                <span className="font-mono text-xs text-app-dim">{episodeProgressList.length} recorded</span>
               </div>
-              <EpisodeProgressList items={episodeProgressList} />
+              <div className="mt-4">
+                <EpisodeProgressList items={episodeProgressList} />
+              </div>
             </section>
           )}
 
-          <section aria-labelledby="watch-sessions-heading" className="space-y-4">
-            <div className="flex items-end justify-between gap-4">
+          {/* Watch Sessions History */}
+          <section aria-labelledby="watch-sessions-heading" className="rounded-2xl border border-app-border/70 bg-app-surface/60 p-6 shadow-sm backdrop-blur-md sm:p-8">
+            <div className="flex items-end justify-between gap-4 border-b border-app-border/60 pb-4">
               <div>
-                <p className="vr-label">Riwayat</p>
-                <h2 id="watch-sessions-heading" className="mt-2 text-2xl font-semibold text-app-text">
-                  Sesi menonton
+                <p className="vr-label">History</p>
+                <h2 id="watch-sessions-heading" className="mt-1 text-xl font-semibold text-app-text">
+                  Watch Sessions
                 </h2>
               </div>
-              <span className="font-mono text-xs text-app-dim">{watchSessionsList.length} sesi</span>
+              <span className="font-mono text-xs text-app-dim">{watchSessionsList.length} sessions</span>
             </div>
-            <WatchSessionsList items={watchSessionsList} />
+            <div className="mt-4">
+              <WatchSessionsList items={watchSessionsList} />
+            </div>
           </section>
 
-          <section className="border-t border-app-border pt-10">
+          {/* Danger Zone */}
+          <section className="rounded-2xl border border-brand-danger/20 bg-brand-danger/5 p-6 backdrop-blur-md">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h3 className="text-base font-semibold text-app-text">Hapus dari koleksi</h3>
-                <p className="mt-1 max-w-xl text-sm leading-6 text-app-dim">
-                  Gunakan hanya kalau media ini tidak ingin disimpan bersama progres, rating, dan catatanmu.
+                <h3 className="text-sm font-semibold text-brand-danger">Remove from collection</h3>
+                <p className="mt-1 max-w-xl text-xs leading-relaxed text-app-dim">
+                  Removes this media along with its tracked episode progress, personal rating, and notes.
                 </p>
               </div>
               <DeleteEntryDialog entryId={entry.id} mediaTitle={media.title} />

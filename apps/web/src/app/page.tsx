@@ -1,22 +1,22 @@
-﻿import Link from 'next/link';
+import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { Logo } from '@/components/brand/Logo';
 
 const steps = [
   {
     number: '01',
-    title: 'Simpan',
-    body: 'Tambahkan tontonan yang ingin kamu lihat, tanpa harus mengingatnya di aplikasi lain.',
+    title: 'Save',
+    body: 'Add titles you want to watch without having to keep track of them across multiple apps.',
   },
   {
     number: '02',
-    title: 'Lanjutkan',
-    body: 'Temukan kembali episode, status, dan progres terakhir saat kamu kembali menonton.',
+    title: 'Resume',
+    body: 'Pick up right where you left off with episode, status, and your latest progress.',
   },
   {
     number: '03',
-    title: 'Ingat',
-    body: 'Beri rating dan simpan catatan pribadi setelah selesai, seperti jurnal tontonan.',
+    title: 'Remember',
+    body: 'Rate and leave personal notes when finished, like a personal viewing journal.',
   },
 ];
 
@@ -37,27 +37,27 @@ export default async function HomePage() {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-8">
           <Logo size="md" />
 
-          <nav className="hidden items-center gap-8 md:flex" aria-label="Navigasi utama">
-            <a href="#tentang" className="text-sm text-app-muted transition hover:text-app-text">
-              Tentang
+          <nav className="hidden items-center gap-8 md:flex" aria-label="Main navigation">
+            <a href="#about" className="text-sm text-app-muted transition hover:text-app-text">
+              About
             </a>
-            <a href="#cara-kerja" className="text-sm text-app-muted transition hover:text-app-text">
-              Cara Kerja
+            <a href="#how-it-works" className="text-sm text-app-muted transition hover:text-app-text">
+              How It Works
             </a>
           </nav>
 
           <div className="flex items-center gap-2 sm:gap-4">
             {user ? (
               <Link href="/dashboard" className="vr-primary">
-                Buka Library
+                Open Library
               </Link>
             ) : (
               <>
                 <Link href="/login" className="hidden text-sm font-medium text-app-muted transition hover:text-app-text sm:inline-flex">
-                  Masuk
+                  Sign In
                 </Link>
                 <Link href="/register" className="vr-primary">
-                  Mulai
+                  Get Started
                 </Link>
               </>
             )}
@@ -66,23 +66,23 @@ export default async function HomePage() {
       </header>
 
       <main>
-        <section id="tentang" className="overflow-hidden border-b border-app-border">
+        <section id="about" className="overflow-hidden border-b border-app-border">
           <div className="mx-auto grid min-h-[calc(100vh-73px)] max-w-7xl items-center gap-12 px-5 py-16 sm:px-8 lg:grid-cols-[minmax(0,1fr)_440px] lg:py-20">
             <div className="min-w-0 max-w-3xl">
               <p className="vr-label">Vrate / Personal viewing log</p>
               <h1 className="mt-5 max-w-full text-balance text-5xl font-semibold leading-[0.98] text-app-text sm:text-7xl lg:text-8xl">
-                Catat yang kamu tonton.
+                Track what you watch.
               </h1>
               <p className="mt-7 max-w-full text-base leading-8 text-app-muted sm:text-lg">
-                Satu tempat untuk menyimpan film, serial, dan anime beserta progres, rating, dan catatan pribadimu.
+                One place to track movies, series, and anime with progress, ratings, and personal notes.
               </p>
               <div className="mt-9 flex flex-col gap-3 sm:flex-row">
                 <Link href={user ? '/dashboard' : '/register'} className="vr-primary w-full sm:w-auto">
-                  {user ? 'Buka Library' : 'Mulai mencatat'}
+                  {user ? 'Open Library' : 'Start tracking'}
                 </Link>
                 {!user && (
                   <Link href="/login" className="vr-secondary w-full sm:w-auto">
-                    Masuk
+                    Sign In
                   </Link>
                 )}
               </div>
@@ -100,7 +100,7 @@ export default async function HomePage() {
                 <div className="space-y-3">
                   <div className="aspect-[2/3] border border-app-border bg-app-text p-3 text-app-bg">
                     <div className="flex h-full flex-col justify-between border border-app-bg/20 p-4">
-                      <span className="text-[11px] font-semibold uppercase text-app-bg/60">Catatan</span>
+                      <span className="text-[11px] font-semibold uppercase text-app-bg/60">Notes</span>
                       <div>
                         <div className="h-px w-14 bg-brand-primary" />
                         <div className="mt-4 space-y-2">
@@ -129,13 +129,13 @@ export default async function HomePage() {
           </div>
         </section>
 
-        <section id="cara-kerja" className="border-b border-app-border px-5 py-16 sm:px-8 sm:py-20">
+        <section id="how-it-works" className="border-b border-app-border px-5 py-16 sm:px-8 sm:py-20">
           <div className="mx-auto max-w-7xl">
             <div className="grid gap-10 lg:grid-cols-[320px_1fr]">
               <div>
-                <p className="vr-label">Cara Kerja</p>
+                <p className="vr-label">How It Works</p>
                 <h2 className="mt-3 text-3xl font-semibold leading-tight text-app-text sm:text-4xl">
-                  Arsip kecil untuk tontonan yang panjang.
+                  A personal archive for your viewing journey.
                 </h2>
               </div>
               <div className="divide-y divide-app-border border-y border-app-border">
@@ -156,11 +156,11 @@ export default async function HomePage() {
             <div>
               <p className="vr-label">Vrate</p>
               <h2 className="mt-3 max-w-2xl text-3xl font-semibold leading-tight text-app-text sm:text-5xl">
-                Library pribadi yang tetap tenang saat datanya masih kosong.
+                A personal library that stays clean, calm, and focused.
               </h2>
             </div>
             <Link href={user ? '/dashboard' : '/register'} className="vr-primary w-full sm:w-auto">
-              {user ? 'Buka Library' : 'Mulai mencatat'}
+              {user ? 'Open Library' : 'Start tracking'}
             </Link>
           </div>
         </section>
@@ -170,7 +170,7 @@ export default async function HomePage() {
         <div className="mx-auto flex max-w-7xl flex-col gap-5 text-sm text-app-dim sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
             <Logo size="sm" isLink={false} />
-            <span>Catat yang kamu tonton.</span>
+            <span>Track what you watch.</span>
           </div>
           <div className="flex flex-wrap items-center gap-5">
             <Link href="/terms-placeholder" className="hover:text-app-text">

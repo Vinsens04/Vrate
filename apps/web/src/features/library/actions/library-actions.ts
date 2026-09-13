@@ -25,7 +25,7 @@ export async function updateStatusAction(
   if (!parseResult.success) {
     return {
       success: false,
-      error: parseResult.error.issues[0]?.message || 'Input status tidak valid.',
+      error: parseResult.error.issues[0]?.message || 'Invalid status input.',
     };
   }
 
@@ -37,7 +37,7 @@ export async function updateStatusAction(
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return { success: false, error: 'Sesi telah berakhir. Silakan login kembali.' };
+      return { success: false, error: 'Session expired. Please sign in again.' };
     }
 
     // 1. Fetch current entry to inspect existing dates
@@ -49,7 +49,7 @@ export async function updateStatusAction(
       .single();
 
     if (fetchError || !currentEntry) {
-      return { success: false, error: 'Media tidak ditemukan di library Anda.' };
+      return { success: false, error: 'Media not found in your library.' };
     }
 
     // 2. Compute date updates according to domain rules
@@ -73,17 +73,17 @@ export async function updateStatusAction(
 
     if (updateError) {
       console.error('Failed to update status:', updateError.message);
-      return { success: false, error: 'Gagal memperbarui status. Coba lagi nanti.' };
+      return { success: false, error: 'Failed to update status. Please try again later.' };
     }
 
     revalidatePath('/dashboard');
     revalidatePath('/dashboard/library');
     revalidatePath(`/dashboard/library/${entryId}`);
 
-    return { success: true, message: 'Status berhasil diperbarui.' };
+    return { success: true, message: 'Status updated successfully.' };
   } catch (err) {
     console.error('Unexpected error in updateStatusAction:', err);
-    return { success: false, error: 'Terjadi kesalahan sistem saat memperbarui status.' };
+    return { success: false, error: 'A system error occurred while updating status.' };
   }
 }
 
@@ -98,7 +98,7 @@ export async function updateRatingAction(
   if (!parseResult.success) {
     return {
       success: false,
-      error: parseResult.error.issues[0]?.message || 'Input rating tidak valid.',
+      error: parseResult.error.issues[0]?.message || 'Invalid rating input.',
     };
   }
 
@@ -110,7 +110,7 @@ export async function updateRatingAction(
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return { success: false, error: 'Sesi telah berakhir. Silakan login kembali.' };
+      return { success: false, error: 'Session expired. Please sign in again.' };
     }
 
     const { error: updateError } = await supabase
@@ -121,17 +121,17 @@ export async function updateRatingAction(
 
     if (updateError) {
       console.error('Failed to update rating:', updateError.message);
-      return { success: false, error: 'Gagal menyimpan rating. Coba lagi nanti.' };
+      return { success: false, error: 'Failed to save rating. Please try again later.' };
     }
 
     revalidatePath('/dashboard');
     revalidatePath('/dashboard/library');
     revalidatePath(`/dashboard/library/${entryId}`);
 
-    return { success: true, message: 'Rating berhasil diperbarui.' };
+    return { success: true, message: 'Rating updated successfully.' };
   } catch (err) {
     console.error('Unexpected error in updateRatingAction:', err);
-    return { success: false, error: 'Terjadi kesalahan sistem saat memperbarui rating.' };
+    return { success: false, error: 'A system error occurred while updating rating.' };
   }
 }
 
@@ -146,7 +146,7 @@ export async function toggleFavoriteAction(
   if (!parseResult.success) {
     return {
       success: false,
-      error: parseResult.error.issues[0]?.message || 'Input favorit tidak valid.',
+      error: parseResult.error.issues[0]?.message || 'Invalid favorite input.',
     };
   }
 
@@ -158,7 +158,7 @@ export async function toggleFavoriteAction(
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return { success: false, error: 'Sesi telah berakhir. Silakan login kembali.' };
+      return { success: false, error: 'Session expired. Please sign in again.' };
     }
 
     const { error: updateError } = await supabase
@@ -169,7 +169,7 @@ export async function toggleFavoriteAction(
 
     if (updateError) {
       console.error('Failed to toggle favorite:', updateError.message);
-      return { success: false, error: 'Gagal memperbarui status favorit.' };
+      return { success: false, error: 'Failed to update favorite status.' };
     }
 
     revalidatePath('/dashboard');
@@ -178,11 +178,11 @@ export async function toggleFavoriteAction(
 
     return {
       success: true,
-      message: isFavorite ? 'Ditambahkan ke favorit.' : 'Dihapus dari favorit.',
+      message: isFavorite ? 'Added to favorites.' : 'Removed from favorites.',
     };
   } catch (err) {
     console.error('Unexpected error in toggleFavoriteAction:', err);
-    return { success: false, error: 'Terjadi kesalahan sistem saat memperbarui favorit.' };
+    return { success: false, error: 'A system error occurred while updating favorite.' };
   }
 }
 
@@ -197,7 +197,7 @@ export async function updateNotesAction(
   if (!parseResult.success) {
     return {
       success: false,
-      error: parseResult.error.issues[0]?.message || 'Input catatan tidak valid.',
+      error: parseResult.error.issues[0]?.message || 'Invalid notes input.',
     };
   }
 
@@ -209,7 +209,7 @@ export async function updateNotesAction(
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return { success: false, error: 'Sesi telah berakhir. Silakan login kembali.' };
+      return { success: false, error: 'Session expired. Please sign in again.' };
     }
 
     const { error: updateError } = await supabase
@@ -220,15 +220,15 @@ export async function updateNotesAction(
 
     if (updateError) {
       console.error('Failed to update notes:', updateError.message);
-      return { success: false, error: 'Gagal menyimpan catatan. Coba lagi nanti.' };
+      return { success: false, error: 'Failed to save notes. Please try again later.' };
     }
 
     revalidatePath(`/dashboard/library/${entryId}`);
 
-    return { success: true, message: 'Catatan berhasil disimpan.' };
+    return { success: true, message: 'Notes saved successfully.' };
   } catch (err) {
     console.error('Unexpected error in updateNotesAction:', err);
-    return { success: false, error: 'Terjadi kesalahan sistem saat menyimpan catatan.' };
+    return { success: false, error: 'A system error occurred while saving notes.' };
   }
 }
 
@@ -241,7 +241,7 @@ export async function deleteEntryAction(entryId: string): Promise<ActionResult> 
   if (!parseResult.success) {
     return {
       success: false,
-      error: parseResult.error.issues[0]?.message || 'ID entri tidak valid.',
+      error: parseResult.error.issues[0]?.message || 'Invalid entry ID.',
     };
   }
 
@@ -253,7 +253,7 @@ export async function deleteEntryAction(entryId: string): Promise<ActionResult> 
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return { success: false, error: 'Sesi telah berakhir. Silakan login kembali.' };
+      return { success: false, error: 'Session expired. Please sign in again.' };
     }
 
     const { error: deleteError } = await supabase
@@ -264,15 +264,15 @@ export async function deleteEntryAction(entryId: string): Promise<ActionResult> 
 
     if (deleteError) {
       console.error('Failed to delete entry:', deleteError.message);
-      return { success: false, error: 'Gagal menghapus entri dari library.' };
+      return { success: false, error: 'Failed to remove entry from library.' };
     }
 
     revalidatePath('/dashboard');
     revalidatePath('/dashboard/library');
 
-    return { success: true, message: 'Media berhasil dihapus dari koleksi Anda.' };
+    return { success: true, message: 'Media removed from your library.' };
   } catch (err) {
     console.error('Unexpected error in deleteEntryAction:', err);
-    return { success: false, error: 'Terjadi kesalahan sistem saat menghapus media.' };
+    return { success: false, error: 'A system error occurred while removing media.' };
   }
 }

@@ -1,7 +1,8 @@
-﻿import React from 'react';
+import React from 'react';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { DashboardNav } from '@/features/library/components/DashboardNav';
+import { DashboardTopBar } from '@/features/library/components/DashboardTopBar';
 
 export default async function DashboardLayout({
   children,
@@ -23,13 +24,14 @@ export default async function DashboardLayout({
     .eq('id', user.id)
     .single();
 
-  const displayName = profile?.display_name || user.email?.split('@')[0] || 'Pengguna';
+  const displayName = profile?.display_name || user.email?.split('@')[0] || 'User';
 
   return (
-    <div className="min-h-screen bg-app-bg text-app-text selection:bg-brand-primary selection:text-app-bg">
+    <div className="min-h-screen bg-app-bg text-app-text selection:bg-brand-primary selection:text-white">
       <DashboardNav userEmail={user.email} displayName={displayName} />
-      <div className="flex flex-col md:pl-60">
-        <main className="flex-1 px-5 py-8 sm:px-8 lg:px-10 lg:py-10">
+      <div className="flex flex-col md:pl-64">
+        <DashboardTopBar displayName={displayName} />
+        <main className="flex-1 px-4 py-6 sm:px-8 lg:px-10 lg:py-8">
           <div className="mx-auto max-w-7xl">{children}</div>
         </main>
       </div>

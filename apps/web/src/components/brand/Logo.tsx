@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import Link from 'next/link';
 
 interface LogoProps {
@@ -64,7 +64,7 @@ export function Logo({
       <Link
         href={href}
         className="inline-flex items-center rounded-btn focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
-        aria-label="Beranda Vrate"
+        aria-label="Vrate Home"
       >
         {content}
       </Link>

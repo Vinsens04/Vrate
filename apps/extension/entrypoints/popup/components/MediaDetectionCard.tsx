@@ -8,8 +8,6 @@ import {
   dismissCandidate,
   getCurrentDetectionState,
   resolveCandidateMedia,
-  toggleMiruroPermission,
-  setAutoTrackingEnabled,
   triggerManualDetection,
 } from '../../../src/detection/client';
 import { sendExtensionMessage } from '../../../src/auth/messages';
@@ -19,15 +17,15 @@ import { startActiveTabTracking } from '../../../src/tracking/client';
 export function MediaDetectionCard() {
   const [loading, setLoading] = useState(true);
   const [detecting, setDetecting] = useState(false);
+  const [resolving, setResolving] = useState(false);
   const [candidate, setCandidate] = useState<DetectedMediaCandidate | null>(null);
   const [resolvedItems, setResolvedItems] = useState<ResolvedMediaItem[]>([]);
   const [selectedItem, setSelectedItem] = useState<ResolvedMediaItem | null>(null);
-  const [isMiruroPage, setIsMiruroPage] = useState(false);
-  const [autoPermGranted, setAutoPermGranted] = useState(false);
-  const [autoTrackEnabled, setAutoTrackEnabled] = useState(true);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [customSearchQuery, setCustomSearchQuery] = useState('');
+  const [showManualSearch, setShowManualSearch] = useState(false);
 
   // Initialize and load current tab detection
   useEffect(() => {
@@ -39,16 +37,14 @@ export function MediaDetectionCard() {
         const state = await getCurrentDetectionState();
         if (!mounted) return;
 
-        setIsMiruroPage(Boolean(state.isMiruroPage));
-        setAutoPermGranted(Boolean(state.autoPermissionGranted));
-        setAutoTrackEnabled(state.autoTrackEnabled !== false);
-
         if (state.candidate) {
           setCandidate(state.candidate);
+          setCustomSearchQuery(state.candidate.titleHint || '');
           // Automatically trigger catalog resolution
           void resolveMedia(state.candidate);
         } else {
           setCandidate(null);
+          setCustomSearchQuery('');
         }
       } catch {
         // Background might be waking up
@@ -63,22 +59,43 @@ export function MediaDetectionCard() {
     };
   }, []);
 
-  async function resolveMedia(cand: DetectedMediaCandidate) {
+  async function resolveMedia(cand: DetectedMediaCandidate, customTitle?: string) {
+    setResolving(true);
     setStatusMessage(null);
+    setActionSuccess(null);
+
     try {
-      const res = await resolveCandidateMedia(cand);
+      const candidateToResolve = customTitle
+        ? { ...cand, titleHint: customTitle }
+        : cand;
+
+      const res = await resolveCandidateMedia(candidateToResolve);
       if (res && res.success) {
-        setResolvedItems(res.candidates);
-        if (res.candidates.length > 0) {
-          setSelectedItem(res.candidates[0] ?? null);
-        } else if (res.message) {
-          setStatusMessage(res.message);
+        const candidates = res.candidates || [];
+        setResolvedItems(candidates);
+
+        if (candidates.length > 0) {
+          // If high confidence or top match exists, auto-select top candidate
+          setSelectedItem(candidates[0] ?? null);
+          setStatusMessage(null);
+          if (!customTitle) {
+            setShowManualSearch(false);
+          }
+        } else {
+          setSelectedItem(null);
+          setShowManualSearch(true);
+          setStatusMessage(res.message || 'No direct catalog match found. Try refining the title below.');
         }
       } else if (res?.error) {
+        setSelectedItem(null);
+        setShowManualSearch(true);
         setStatusMessage(res.error);
       }
     } catch {
-      setStatusMessage('Gagal menghubungi katalog Vrate.');
+      setSelectedItem(null);
+      setStatusMessage('Failed to contact Vrate catalog.');
+    } finally {
+      setResolving(false);
     }
   }
 
@@ -91,14 +108,16 @@ export function MediaDetectionCard() {
       const res = await triggerManualDetection();
       if (res.candidate) {
         setCandidate(res.candidate);
+        setCustomSearchQuery(res.candidate.titleHint || '');
         await resolveMedia(res.candidate);
       } else {
         setCandidate(null);
         setResolvedItems([]);
         setSelectedItem(null);
+        setCustomSearchQuery('');
       }
     } catch (err: unknown) {
-      setStatusMessage(err instanceof Error ? err.message : 'Deteksi gagal dijalankan.');
+      setStatusMessage(err instanceof Error ? err.message : 'Failed to run detection.');
     } finally {
       setDetecting(false);
     }
@@ -111,6 +130,7 @@ export function MediaDetectionCard() {
       setResolvedItems([]);
       setSelectedItem(null);
       setActionSuccess(null);
+      setShowManualSearch(false);
     } catch {
       // ignore
     }
@@ -124,7 +144,7 @@ export function MediaDetectionCard() {
     const externalId = itemToAdd ? itemToAdd.externalId : candidate?.externalId;
 
     if (!provider || provider === 'unknown' || !externalId) {
-      setStatusMessage('Pilih salah satu hasil katalog yang sesuai terlebih dahulu.');
+      setStatusMessage('Please select a matching catalog item first.');
       return;
     }
 
@@ -144,8 +164,8 @@ export function MediaDetectionCard() {
       if (res.success) {
         setActionSuccess(
           status === 'watchlist'
-            ? 'Berhasil ditambahkan ke Watchlist!'
-            : 'Berhasil ditambahkan ke Sedang Ditonton!'
+            ? 'Successfully added to Watchlist!'
+            : 'Added to Watching! Tracking started.'
         );
         // Mark selected item as added in library
         if (selectedItem) {
@@ -168,74 +188,14 @@ export function MediaDetectionCard() {
           });
         }
       } else {
-        setStatusMessage(res.error || res.message || 'Gagal menambahkan ke library.');
+        setStatusMessage(res.error || res.message || 'Failed to add to library.');
       }
     } catch (err: unknown) {
-      setStatusMessage(err instanceof Error ? err.message : 'Kesalahan jaringan.');
+      setStatusMessage(err instanceof Error ? err.message : 'Network error.');
     } finally {
       setIsSubmitting(false);
     }
   }
-
-  async function handleToggleAutoTrack() {
-    try {
-      if (!autoPermGranted) {
-        const granted = await toggleMiruroPermission(false);
-        setAutoPermGranted(granted);
-        if (granted) {
-          await setAutoTrackingEnabled(true);
-          setAutoTrackEnabled(true);
-        }
-      } else {
-        const next = !autoTrackEnabled;
-        await setAutoTrackingEnabled(next);
-        setAutoTrackEnabled(next);
-      }
-    } catch {
-      // Permission prompt declined by user
-    }
-  }
-
-  const renderAutoTrackBox = () => {
-    const isFullyActive = autoPermGranted && autoTrackEnabled;
-
-    return (
-      <div className="auto-detect-box" style={{ marginTop: '10px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontWeight: 600, color: '#F1F0EA', fontSize: '11px' }}>
-            Auto Tracking Miruro {isMiruroPage ? '(Tab Miruro)' : ''}
-          </span>
-          <span
-            className="meta-tag"
-            style={{ color: isFullyActive ? '#5DBB8A' : '#A3A3A3' }}
-          >
-            {isFullyActive ? 'Aktif' : 'Nonaktif'}
-          </span>
-        </div>
-
-        <p style={{ color: '#888888', lineHeight: '1.4', fontSize: '11px', marginTop: '4px' }}>
-          {isFullyActive
-            ? 'Ekstensi otomatis mendeteksi episode, melacak pemutaran, dan menyimpan ke library setelah 30 detik pemutaran nyata.'
-            : !autoPermGranted
-            ? 'Berikan izin host untuk miruro.bz dan player iframe agar tracking otomatis dapat berjalan tanpa konfirmasi.'
-            : 'Fitur tracking otomatis dinonaktifkan sementara.'}
-        </p>
-
-        <button
-          type="button"
-          className="btn-secondary"
-          onClick={handleToggleAutoTrack}
-          style={{ fontSize: '11px', minHeight: '30px', marginTop: '6px', width: '100%' }}
-        >
-          {isFullyActive
-            ? 'Nonaktifkan Auto Tracking'
-            : !autoPermGranted
-            ? 'Aktifkan Izin & Auto Tracking'
-            : 'Aktifkan Auto Tracking'}
-        </button>
-      </div>
-    );
-  };
 
   const openDashboardDiscover = () => {
     void sendExtensionMessage({
@@ -259,11 +219,11 @@ export function MediaDetectionCard() {
     return (
       <div className="detection-card">
         <div className="detection-header">
-          <span className="detection-label">Deteksi Halaman</span>
+          <span className="detection-label">Page Detection</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 0' }}>
           <div className="status-dot" style={{ backgroundColor: '#FF5C35', animation: 'pulse 1s infinite' }} />
-          <span style={{ fontSize: '12px', color: '#A3A3A3' }}>Memeriksa halaman…</span>
+          <span style={{ fontSize: '12px', color: '#A3A3A3' }}>Checking page…</span>
         </div>
       </div>
     );
@@ -272,15 +232,23 @@ export function MediaDetectionCard() {
   // Sub-component: Active Candidate Detected
   if (candidate) {
     const isMiruro = candidate.sourceName === 'miruro';
+    const isCandidateReady = Boolean(
+      selectedItem &&
+      selectedItem.externalId &&
+      selectedItem.provider
+    );
+
     const confidenceLabel =
-      candidate.confidence >= 0.8
-        ? 'Cocok kuat'
+      isCandidateReady
+        ? 'Matched'
+        : candidate.confidence >= 0.8
+        ? 'Strong match'
         : candidate.confidence >= 0.5
-        ? 'Kemungkinan cocok'
-        : 'Perlu dikonfirmasi';
+        ? 'Probable match'
+        : 'Needs confirmation';
 
     const confidenceClass =
-      candidate.confidence >= 0.8
+      isCandidateReady || candidate.confidence >= 0.8
         ? 'confidence-high'
         : candidate.confidence >= 0.5
         ? 'confidence-medium'
@@ -290,8 +258,8 @@ export function MediaDetectionCard() {
     const displayPoster = selectedItem?.posterUrl;
     const mediaTypeLabel = selectedItem
       ? selectedItem.mediaType === 'movie'
-        ? 'Film'
-        : 'Serial'
+        ? 'Movie'
+        : 'Series'
       : isMiruro
       ? 'Anime'
       : 'Media';
@@ -299,11 +267,11 @@ export function MediaDetectionCard() {
     const inLibrary = Boolean(selectedItem?.inLibrary);
     const libraryStatusText =
       selectedItem?.libraryStatus === 'watching'
-        ? 'Sedang Ditonton'
+        ? 'Watching'
         : selectedItem?.libraryStatus === 'watchlist'
         ? 'Watchlist'
         : selectedItem?.libraryStatus === 'completed'
-        ? 'Selesai'
+        ? 'Completed'
         : selectedItem?.libraryStatus;
 
     return (
@@ -311,12 +279,20 @@ export function MediaDetectionCard() {
         <div className="detection-card">
           <div className="detection-header">
             <span className="detection-label">
-              {isMiruro ? 'Terdeteksi dari AniList ID' : 'Media Terdeteksi'}
+              {isMiruro ? 'Detected from AniList ID' : 'Detected Media'}
             </span>
             <span className={`confidence-pill ${confidenceClass}`}>
               {confidenceLabel}
             </span>
           </div>
+
+          {/* Resolving Status Indicator */}
+          {resolving && (
+            <div className="resolving-badge">
+              <div className="status-dot" style={{ backgroundColor: '#FF5C35', animation: 'pulse 1s infinite' }} />
+              <span>Matching with Vrate, TMDB & AniList…</span>
+            </div>
+          )}
 
           {/* Media Preview Box */}
           <div className="media-preview-box">
@@ -338,46 +314,131 @@ export function MediaDetectionCard() {
 
               <div className="media-meta-tags">
                 <span className="meta-tag highlight">{mediaTypeLabel}</span>
+                {selectedItem?.releaseYear && (
+                  <span className="meta-tag">{selectedItem.releaseYear}</span>
+                )}
                 {candidate.episodeNumber !== null && (
                   <span className="meta-tag">Ep {candidate.episodeNumber}</span>
+                )}
+                {selectedItem && (
+                  <span className="meta-tag">{selectedItem.provider.toUpperCase()}</span>
                 )}
                 <span className="meta-tag">{candidate.sourceDomain}</span>
               </div>
 
               {inLibrary && (
                 <div className="library-status-pill">
-                  <span>✓ Sudah di Library {libraryStatusText ? `(${libraryStatusText})` : ''}</span>
+                  <span>✓ In Library {libraryStatusText ? `(${libraryStatusText})` : ''}</span>
                 </div>
               )}
             </div>
           </div>
 
-          {/* If generic candidate, show up to 5 matching catalog candidates */}
-          {!isMiruro && resolvedItems.length > 1 && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <span style={{ fontSize: '11px', color: '#A3A3A3', fontWeight: 600 }}>
-                Pilih media yang sesuai:
-              </span>
+          {/* If generic candidate, show matching catalog candidates for easy switching */}
+          {!isMiruro && resolvedItems.length > 0 && (
+            <div className="candidate-section">
+              <div className="candidate-section-header">
+                <span className="candidate-section-title">
+                  {resolvedItems.length > 1
+                    ? 'Matching titles (click to select):'
+                    : 'Matched catalog title:'}
+                </span>
+                <span className="candidate-count-pill">{resolvedItems.length} found</span>
+              </div>
               <div className="candidate-list">
                 {resolvedItems.map((item) => {
-                  const isSelected = selectedItem?.externalId === item.externalId;
+                  const isSelected =
+                    selectedItem?.provider === item.provider &&
+                    selectedItem?.externalId === item.externalId;
                   return (
                     <div
                       key={`${item.provider}:${item.externalId}`}
                       className={`candidate-item ${isSelected ? 'selected' : ''}`}
-                      onClick={() => setSelectedItem(item)}
+                      onClick={() => {
+                        setSelectedItem(item);
+                        setStatusMessage(null);
+                      }}
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '11px', color: isSelected ? '#FF5C35' : '#888' }}>
+                      {item.posterUrl ? (
+                        <img
+                          src={item.posterUrl}
+                          alt={item.title}
+                          className="candidate-thumb"
+                          referrerPolicy="no-referrer"
+                        />
+                      ) : (
+                        <div className="candidate-thumb-placeholder">🎬</div>
+                      )}
+                      <div className="candidate-info">
+                        <span className="candidate-item-title" title={item.title}>
+                          {item.title}
+                        </span>
+                        <div className="candidate-meta">
+                          {item.releaseYear && <span>{item.releaseYear}</span>}
+                          <span className="meta-tag">{item.provider.toUpperCase()}</span>
+                          <span className="meta-tag">
+                            {item.mediaType === 'movie' ? 'Movie' : 'Series'}
+                          </span>
+                          {item.inLibrary && (
+                            <span className="library-mini-badge">✓ In Library</span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="candidate-radio">
+                        <span style={{ fontSize: '13px', color: isSelected ? '#FF5C35' : '#555' }}>
                           {isSelected ? '●' : '○'}
                         </span>
-                        <span className="candidate-item-title">{item.title}</span>
                       </div>
-                      <span className="meta-tag">{item.provider.toUpperCase()}</span>
                     </div>
                   );
                 })}
               </div>
+            </div>
+          )}
+
+          {/* Refine Search / Manual Query Input */}
+          {!isMiruro && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <button
+                  type="button"
+                  className="link-btn"
+                  onClick={() => setShowManualSearch((prev) => !prev)}
+                >
+                  {showManualSearch ? 'Hide search ▴' : 'Refine title search ▾'}
+                </button>
+              </div>
+
+              {showManualSearch && (
+                <div className="manual-search-box">
+                  <div className="manual-search-row">
+                    <input
+                      type="text"
+                      className="manual-search-input"
+                      value={customSearchQuery}
+                      onChange={(e) => setCustomSearchQuery(e.target.value)}
+                      placeholder="Type title to search (e.g. One Piece)..."
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && customSearchQuery.trim()) {
+                          void resolveMedia(candidate, customSearchQuery.trim());
+                        }
+                      }}
+                    />
+                    <button
+                      type="button"
+                      className="btn-search-inline"
+                      onClick={() => {
+                        if (customSearchQuery.trim()) {
+                          void resolveMedia(candidate, customSearchQuery.trim());
+                        }
+                      }}
+                      disabled={resolving || !customSearchQuery.trim()}
+                    >
+                      {resolving ? '...' : 'Search'}
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -394,7 +455,7 @@ export function MediaDetectionCard() {
             </div>
           )}
 
-          {/* Action Buttons */}
+          {/* Action Buttons: Immediately active once candidate is selected */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {!inLibrary ? (
               <div className="actions-grid">
@@ -402,18 +463,25 @@ export function MediaDetectionCard() {
                   type="button"
                   className="btn-primary"
                   onClick={() => handleAddToLibrary('watchlist')}
-                  disabled={isSubmitting}
+                  disabled={!isCandidateReady || isSubmitting || resolving}
+                  title={!isCandidateReady ? 'Select a matching catalog title first' : 'Add to Watchlist'}
                 >
-                  {isSubmitting ? 'Menyimpan...' : '+ Watchlist'}
+                  {isSubmitting ? 'Saving...' : resolving ? 'Matching...' : '+ Watchlist'}
                 </button>
                 <button
                   type="button"
                   className="btn-primary"
-                  style={{ backgroundColor: '#222222', color: '#F1F0EA', border: '1px solid #333' }}
+                  style={{
+                    backgroundColor: '#222222',
+                    color: '#F1F0EA',
+                    border: '1px solid #333',
+                    opacity: !isCandidateReady || isSubmitting || resolving ? 0.6 : 1,
+                  }}
                   onClick={() => handleAddToLibrary('watching')}
-                  disabled={isSubmitting}
+                  disabled={!isCandidateReady || isSubmitting || resolving}
+                  title={!isCandidateReady ? 'Select a matching catalog title first' : 'Start Watching & Tracking'}
                 >
-                  {isSubmitting ? 'Menyimpan...' : '▶ Mulai Menonton'}
+                  {isSubmitting ? 'Saving...' : resolving ? 'Matching...' : '▶ Start Watching'}
                 </button>
               </div>
             ) : (
@@ -422,7 +490,7 @@ export function MediaDetectionCard() {
                 className="btn-secondary"
                 onClick={() => openDashboardEntry(selectedItem?.libraryEntryId)}
               >
-                Lihat di Dashboard
+                View in Dashboard
               </button>
             )}
 
@@ -443,7 +511,7 @@ export function MediaDetectionCard() {
                 style={{ flex: 1 }}
                 onClick={handleDismiss}
               >
-                Bukan Ini
+                Not this
               </button>
               <button
                 type="button"
@@ -451,11 +519,9 @@ export function MediaDetectionCard() {
                 style={{ flex: 1 }}
                 onClick={openDashboardDiscover}
               >
-                Cari di Vrate
+                Search on Vrate
               </button>
             </div>
-
-            {renderAutoTrackBox()}
           </div>
         </div>
       </div>
@@ -467,11 +533,11 @@ export function MediaDetectionCard() {
     <div className="detection-section">
       <div className="detection-card">
         <div className="detection-header">
-          <span className="detection-label">Deteksi Media</span>
+          <span className="detection-label">Media Detection</span>
         </div>
 
         <p style={{ fontSize: '12px', color: '#A3A3A3', lineHeight: '1.45' }}>
-          Tidak ada film, serial, atau anime yang dapat dikenali pada halaman ini.
+          No movies, series, or anime recognized on this page.
         </p>
 
         {statusMessage && (
@@ -487,20 +553,17 @@ export function MediaDetectionCard() {
             onClick={handleManualDetect}
             disabled={detecting}
           >
-            Deteksi Halaman Ini
+            Detect on this page
           </button>
           <button
             type="button"
             className="btn-secondary"
             onClick={openDashboardDiscover}
           >
-            Cari manual di Vrate
+            Search manually on Vrate
           </button>
         </div>
       </div>
-
-      {/* Auto-Tracking settings for Miruro */}
-      {renderAutoTrackBox()}
     </div>
   );
 }

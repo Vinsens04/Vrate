@@ -9,7 +9,7 @@ interface ErrorNoticeProps {
 export function ErrorNotice({
   message,
   onRetry,
-  retryLabel = 'Coba Lagi',
+  retryLabel = 'Try Again',
 }: ErrorNoticeProps) {
   return (
     <div className="error-banner" role="alert">

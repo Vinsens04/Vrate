@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import type { EpisodeProgressItem } from '../types/library-types';
 import { formatRelativeTime } from '../utils/library-logic';
 
@@ -9,42 +9,66 @@ interface EpisodeProgressListProps {
 export function EpisodeProgressList({ items }: EpisodeProgressListProps) {
   if (items.length === 0) {
     return (
-      <div className="border-y border-app-border py-6">
-        <p className="text-sm text-app-muted">Belum ada progres episode.</p>
-        <p className="mt-1 text-xs text-app-dim">Progres per episode akan tercatat saat integrasi streaming tracker aktif.</p>
+      <div className="rounded-xl border border-app-border/70 bg-app-surface/40 p-6 text-center">
+        <p className="text-sm font-medium text-app-muted">No episode progress recorded yet.</p>
+        <p className="mt-1 text-xs text-app-dim">Episode progress will sync automatically as you stream content via the Vrate extension.</p>
       </div>
     );
   }
 
   return (
-    <div className="divide-y divide-app-border border-y border-app-border">
+    <div className="space-y-3">
       {items.map(ep => {
-        const seasonLabel = ep.seasonNumber ? `Musim ${ep.seasonNumber} / ` : '';
-        const epLabel = `Episode ${ep.episodeNumber}`;
+        const seasonLabel = ep.seasonNumber ? `S${ep.seasonNumber} ` : '';
+        const epLabel = `EP ${String(ep.episodeNumber).padStart(2, '0')}`;
         const percent = ep.durationSeconds && ep.durationSeconds > 0
           ? Math.min(100, Math.round((ep.progressSeconds / ep.durationSeconds) * 100))
           : ep.isCompleted ? 100 : 0;
 
         return (
-          <div key={ep.id} className="grid gap-3 py-4 sm:grid-cols-[1fr_160px] sm:items-center">
-            <div>
+          <div
+            key={ep.id}
+            className="flex flex-col gap-3 rounded-xl border border-app-border/60 bg-app-surface/50 p-4 transition-colors hover:border-app-border sm:flex-row sm:items-center sm:justify-between"
+          >
+            <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-sm font-semibold text-app-text">{seasonLabel}{epLabel}</span>
-                {ep.lastSourceName && <span className="text-xs text-app-dim">via {ep.lastSourceName}</span>}
+                <span className="rounded-md bg-app-elevated px-2 py-0.5 font-mono text-xs font-semibold text-app-text border border-white/5">
+                  {seasonLabel}{epLabel}
+                </span>
+                {ep.isCompleted && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-brand-success/15 px-2 py-0.5 text-[10px] font-semibold text-brand-success border border-brand-success/20">
+                    <span className="h-1.5 w-1.5 rounded-full bg-brand-success" />
+                    Completed
+                  </span>
+                )}
+                {ep.lastSourceName && (
+                  <span className="text-xs text-app-dim">via {ep.lastSourceName}</span>
+                )}
               </div>
-              <div className="mt-1 flex items-center gap-2 text-xs text-app-dim">
-                <span>{percent}% selesai</span>
+
+              <div className="mt-2 flex items-center gap-2 text-xs text-app-dim">
+                <span>{percent}% watched</span>
                 {ep.lastWatchedAt && (
                   <>
-                    <span>/</span>
+                    <span>•</span>
                     <span>{formatRelativeTime(ep.lastWatchedAt)}</span>
                   </>
                 )}
               </div>
             </div>
 
-            <div className="h-1.5 w-full bg-app-border">
-              <div className={`h-full transition-all duration-300 ${ep.isCompleted ? 'bg-brand-success' : 'bg-brand-primary'}`} style={{ width: `${percent}%` }} />
+            {/* Progress bar */}
+            <div className="w-full sm:w-44">
+              <div className="h-2 w-full overflow-hidden rounded-full bg-app-elevated">
+                <div
+                  className={`h-full transition-all duration-300 ${
+                    ep.isCompleted
+                      ? 'bg-brand-success'
+                      : 'bg-gradient-to-r from-brand-primary to-orange-400'
+                  }`}
+                  style={{ width: `${percent}%` }}
+                />
+              </div>
             </div>
           </div>
         );

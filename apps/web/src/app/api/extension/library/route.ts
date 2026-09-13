@@ -22,14 +22,14 @@ export async function POST(request: NextRequest) {
 
   // Verify Origin header if present
   if (origin && !isOriginAllowed(origin)) {
-    return errorResponse('Origin Browser Extension tidak diizinkan.', 403, origin);
+    return errorResponse('Browser extension origin not allowed.', 403, origin);
   }
 
   // Authenticate Bearer JWT
   const authResult = await authenticateExtensionRequest(request);
   if (!authResult.success || !authResult.user || !authResult.userClient) {
     return errorResponse(
-      authResult.error || 'Autentikasi gagal.',
+      authResult.error || 'Authentication failed.',
       authResult.status || 401,
       origin
     );
@@ -42,13 +42,13 @@ export async function POST(request: NextRequest) {
   try {
     rawBody = await request.json();
   } catch {
-    return errorResponse('Body JSON tidak valid.', 400, origin);
+    return errorResponse('Invalid JSON body.', 400, origin);
   }
 
   const validation = addExtensionLibraryRequestSchema.safeParse(rawBody);
   if (!validation.success) {
     const errorMsg = validation.error.issues.map((i) => i.message).join('; ');
-    return errorResponse(`Parameter tidak valid: ${errorMsg}`, 400, origin);
+    return errorResponse(`Invalid parameters: ${errorMsg}`, 400, origin);
   }
 
   const { provider, externalId, initialStatus } = validation.data;
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     );
 
     if (!canonicalResult.success) {
-      return errorResponse(canonicalResult.error || 'Gagal menyimpan katalog media.', 400, origin);
+      return errorResponse(canonicalResult.error || 'Failed to save media catalog.', 400, origin);
     }
 
     // 2. Add media to user's library using user-scoped client (respecting RLS)
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
 
     if (!libraryResult.success) {
       return errorResponse(
-        libraryResult.error || libraryResult.message || 'Gagal menambahkan ke library.',
+        libraryResult.error || libraryResult.message || 'Failed to add to library.',
         400,
         origin
       );
@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
       origin
     );
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : 'Terjadi kesalahan sistem.';
+    const msg = err instanceof Error ? err.message : 'An internal server error occurred.';
     return errorResponse(msg, 500, origin);
   }
 }

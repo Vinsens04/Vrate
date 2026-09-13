@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useTransition } from 'react';
 import { updateNotesAction } from '../actions/library-actions';
@@ -25,9 +25,9 @@ export function NotesForm({ entryId, initialNotes }: NotesFormProps) {
     startTransition(async () => {
       const res = await updateNotesAction(entryId, notes.trim() ? notes : null);
       if (!res.success) {
-        setFeedback({ text: res.error || 'Gagal menyimpan catatan.', isError: true });
+        setFeedback({ text: res.error || 'Failed to save notes.', isError: true });
       } else {
-        setFeedback({ text: res.message || 'Catatan disimpan.', isError: false });
+        setFeedback({ text: res.message || 'Notes saved.', isError: false });
         setTimeout(() => setFeedback(null), 3000);
       }
     });
@@ -37,7 +37,7 @@ export function NotesForm({ entryId, initialNotes }: NotesFormProps) {
     <form onSubmit={handleSubmit} className="space-y-3">
       <div className="flex items-center justify-between gap-4">
         <label htmlFor="library-notes-input" className="vr-label">
-          Catatan pribadi
+          Personal notes
         </label>
         <span className={`font-mono text-[11px] ${isTooLong ? 'font-semibold text-brand-danger' : 'text-app-dim'}`} aria-live="polite">
           {charCount} / 2000
@@ -50,7 +50,7 @@ export function NotesForm({ entryId, initialNotes }: NotesFormProps) {
         onChange={e => setNotes(e.target.value)}
         rows={7}
         maxLength={2100}
-        placeholder="Tulis kesan, detail yang ingin diingat, atau alasan ratingmu."
+        placeholder="Write your impressions, details you want to remember, or thoughts on this title."
         className={`vr-control w-full resize-y leading-6 ${isTooLong ? 'border-brand-danger focus:border-brand-danger focus:ring-brand-danger/20' : ''}`}
       />
 
@@ -64,7 +64,7 @@ export function NotesForm({ entryId, initialNotes }: NotesFormProps) {
         </div>
 
         <button type="submit" disabled={isPending || isTooLong || !hasChanged} className="vr-primary min-h-[40px] px-4 py-2 text-xs">
-          {isPending ? 'Menyimpan' : 'Simpan catatan'}
+          {isPending ? 'Saving...' : 'Save notes'}
         </button>
       </div>
     </form>

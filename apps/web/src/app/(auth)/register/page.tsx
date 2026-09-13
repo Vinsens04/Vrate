@@ -1,11 +1,11 @@
-﻿import type { Metadata } from 'next';
+import type { Metadata } from 'next';
 import { AuthCard } from '@/features/auth/components/AuthCard';
 import { RegisterForm } from '@/features/auth/components/RegisterForm';
 import { isGoogleAuthEnabled } from '@/lib/supabase/config';
 
 export const metadata: Metadata = {
-  title: 'Daftar - Vrate',
-  description: 'Daftar akun Vrate untuk melacak film, serial, dan anime favoritmu.',
+  title: 'Sign Up - Vrate',
+  description: 'Create a Vrate account to track your favorite movies, series, and anime.',
 };
 
 export default function RegisterPage() {
@@ -13,8 +13,8 @@ export default function RegisterPage() {
 
   return (
     <AuthCard
-      title="Buat akun"
-      subtitle="Mulai simpan tontonan, progres, rating, dan catatan di satu library pribadi."
+      title="Create account"
+      subtitle="Start saving your titles, progress, ratings, and notes in one personal library."
     >
       <RegisterForm googleAuthEnabled={googleEnabled} />
     </AuthCard>

@@ -4,7 +4,12 @@ import type {
   DetectionEvidence,
   SiteDetector,
 } from '../types.ts';
-import { extractJsonLdMetadata, sanitizeTitle } from '../sanitizers.ts';
+import {
+  cleanMediaTitle,
+  extractEpisodeAndSeason,
+  extractJsonLdMetadata,
+  sanitizeTitle,
+} from '../sanitizers.ts';
 import { safeDecodeSlug } from '../url.ts';
 
 export class GenericDetector implements SiteDetector {
@@ -98,6 +103,25 @@ export class GenericDetector implements SiteDetector {
 
     if (!titleHint || titleHint.length < 2) {
       return null;
+    }
+
+    // Extract episode & season info from full context if not provided by JSON-LD
+    if (episodeNumber === null || seasonNumber === null) {
+      const extracted = extractEpisodeAndSeason(
+        context.documentTitle || context.heading || context.openGraph?.['og:title'] || url.pathname
+      );
+      if (episodeNumber === null && extracted.episode) {
+        episodeNumber = extracted.episode;
+      }
+      if (seasonNumber === null && extracted.season) {
+        seasonNumber = extracted.season;
+      }
+    }
+
+    // Clean title for higher catalog resolution hit rate
+    const cleanedTitleHint = cleanMediaTitle(titleHint);
+    if (cleanedTitleHint && cleanedTitleHint.length >= 2) {
+      titleHint = cleanedTitleHint;
     }
 
     // Determine clean domain

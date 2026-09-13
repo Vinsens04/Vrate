@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
 
   if (authError || !user) {
     return NextResponse.json(
-      { error: 'Autentikasi diperlukan untuk mencari katalog.' },
+      { error: 'Authentication required to search catalog.' },
       { status: 401 }
     );
   }
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Terjadi kesalahan sistem saat mencari.';
+    const message = err instanceof Error ? err.message : 'A system error occurred while searching.';
     return NextResponse.json(
       {
         error: message,

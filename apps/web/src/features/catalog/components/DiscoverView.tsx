@@ -74,7 +74,7 @@ export function DiscoverView({ isTmdbConfigured }: DiscoverViewProps) {
 
         if (!res.ok) {
           const json = await res.json().catch(() => ({}));
-          throw new Error(json.error || `Pencarian gagal (status ${res.status})`);
+          throw new Error(json.error || `Search failed (status ${res.status})`);
         }
 
         const data: CatalogSearchResult = await res.json();
@@ -83,7 +83,7 @@ export function DiscoverView({ isTmdbConfigured }: DiscoverViewProps) {
         if (err instanceof Error && err.name === 'AbortError') {
           return;
         }
-        setError(err instanceof Error ? err.message : 'Terjadi kesalahan sistem saat mencari.');
+        setError(err instanceof Error ? err.message : 'A system error occurred while searching.');
       } finally {
         setIsLoading(false);
       }
@@ -153,10 +153,10 @@ export function DiscoverView({ isTmdbConfigured }: DiscoverViewProps) {
       {/* Header */}
       <div>
         <h1 className="font-editorial text-2xl font-bold tracking-tight text-app-text sm:text-3xl">
-          Temukan Media
+          Discover Media
         </h1>
         <p className="mt-1 text-sm text-app-muted">
-          Jelajahi film dan serial dari TMDB serta anime dari AniList untuk ditambahkan ke perpustakaan Anda.
+          Browse movies and series from TMDB and anime from AniList to add to your library.
         </p>
       </div>
 

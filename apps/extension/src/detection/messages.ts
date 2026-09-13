@@ -218,7 +218,7 @@ export async function handleDetectionMessage(
   if (!parsed.success) {
     return {
       success: false,
-      error: 'Format pesan deteksi tidak valid.',
+      error: 'Invalid detection message format.',
     };
   }
 
@@ -230,7 +230,7 @@ export async function handleDetectionMessage(
     if (message.type !== 'DETECTION_CANDIDATE') {
       return {
         success: false,
-        error: 'Pesan deteksi tidak diizinkan dari konteks halaman web.',
+        error: 'Detection message not permitted from web page context.',
       };
     }
 
@@ -238,7 +238,7 @@ export async function handleDetectionMessage(
     const tabUrl = sender.tab.url;
 
     if (!tabId || !tabUrl) {
-      return { success: false, error: 'Konteks tab tidak valid.' };
+      return { success: false, error: 'Invalid tab context.' };
     }
 
     const candidate: DetectedMediaCandidate = (message.payload as { candidate: DetectedMediaCandidate }).candidate;
@@ -251,13 +251,13 @@ export async function handleDetectionMessage(
 
       // Check domain match
       if (candidate.sourceName === 'miruro' && !isMiruroHost(trustedHost)) {
-        return { success: false, error: 'Domain miruro tidak cocok dengan tab asal.' };
+        return { success: false, error: 'Miruro domain does not match source tab.' };
       }
       if (!trustedHost.endsWith(candidateHost) && !candidateHost.endsWith(trustedHost)) {
-        return { success: false, error: 'Domain sumber tidak valid.' };
+        return { success: false, error: 'Invalid source domain.' };
       }
     } catch {
-      return { success: false, error: 'URL tab tidak valid.' };
+      return { success: false, error: 'Invalid tab URL.' };
     }
 
     // Cache candidate in background
@@ -324,12 +324,12 @@ export async function handleDetectionMessage(
       }
 
       if (!targetTabId) {
-        return { success: false, error: 'Tidak ada tab aktif yang ditemukan.' };
+        return { success: false, error: 'No active tab found.' };
       }
 
       // Execute in-page extraction via scripting API
       if (!chrome.scripting?.executeScript) {
-        return { success: false, error: 'API scripting tidak tersedia di browser ini.' };
+        return { success: false, error: 'Scripting API unavailable in this browser.' };
       }
 
       try {
@@ -376,7 +376,7 @@ export async function handleDetectionMessage(
 
         const pageData = results[0]?.result;
         if (!pageData || !pageData.href) {
-          return { success: false, error: 'Gagal mengekstrak metadata dari halaman tab aktif.' };
+          return { success: false, error: 'Failed to extract metadata from the active tab page.' };
         }
 
         const url = new URL(pageData.href);
@@ -406,7 +406,7 @@ export async function handleDetectionMessage(
       } catch (err: unknown) {
         return {
           success: false,
-          error: err instanceof Error ? err.message : 'Gagal menjalankan deteksi pada tab aktif.',
+          error: err instanceof Error ? err.message : 'Failed to run detection on the active tab.',
         };
       }
     }
@@ -416,7 +416,7 @@ export async function handleDetectionMessage(
       if (!token) {
         return {
           success: false,
-          error: 'Sesi ekstensi belum terautentikasi. Silakan masuk terlebih dahulu.',
+          error: 'Extension session is not authenticated. Please sign in first.',
         };
       }
 
@@ -438,7 +438,7 @@ export async function handleDetectionMessage(
       } catch (err: unknown) {
         return {
           success: false,
-          error: err instanceof Error ? err.message : 'Gagal menghubungi server resolusi Vrate.',
+          error: err instanceof Error ? err.message : 'Failed to connect to Vrate resolution server.',
         };
       }
     }
@@ -448,7 +448,7 @@ export async function handleDetectionMessage(
       if (!token) {
         return {
           success: false,
-          error: 'Sesi ekstensi belum terautentikasi. Silakan masuk terlebih dahulu.',
+          error: 'Extension session is not authenticated. Please sign in first.',
         };
       }
 
@@ -480,7 +480,7 @@ export async function handleDetectionMessage(
       } catch (err: unknown) {
         return {
           success: false,
-          error: err instanceof Error ? err.message : 'Gagal menambahkan media ke library.',
+          error: err instanceof Error ? err.message : 'Failed to add media to library.',
         };
       }
     }
@@ -513,6 +513,6 @@ export async function handleDetectionMessage(
     }
 
     default:
-      return { success: false, error: 'Tipe pesan deteksi tidak didukung.' };
+      return { success: false, error: 'Unsupported detection message type.' };
   }
 }

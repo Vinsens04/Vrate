@@ -25,8 +25,8 @@ export function CatalogDetailView({ media: initialMedia }: CatalogDetailViewProp
     media.category === 'anime'
       ? 'Anime'
       : media.mediaType === 'movie'
-      ? 'Film'
-      : 'Serial TV';
+      ? 'Movie'
+      : 'TV Series';
 
   const providerName = media.provider === 'tmdb' ? 'The Movie Database (TMDB)' : 'AniList';
   const providerExternalUrl =
@@ -45,7 +45,7 @@ export function CatalogDetailView({ media: initialMedia }: CatalogDetailViewProp
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
-          <span>Kembali ke Pencarian Temukan</span>
+          <span>Back to Discover Search</span>
         </Link>
       </div>
 
@@ -88,7 +88,7 @@ export function CatalogDetailView({ media: initialMedia }: CatalogDetailViewProp
                 <svg className="h-4 w-4 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                 </svg>
-                <span>Sudah di Library Kamu</span>
+                <span>In Your Library</span>
               </Link>
             ) : (
               <button
@@ -96,7 +96,7 @@ export function CatalogDetailView({ media: initialMedia }: CatalogDetailViewProp
                 onClick={() => setIsModalOpen(true)}
                 className="vr-primary w-full min-h-[44px] text-sm font-semibold"
               >
-                + Tambah ke Library
+                + Add to Library
               </button>
             )}
           </div>
@@ -131,7 +131,7 @@ export function CatalogDetailView({ media: initialMedia }: CatalogDetailViewProp
 
             {media.originalTitle && (
               <p className="mt-1 text-sm text-app-dim italic">
-                Judul Asli: {media.originalTitle}
+                Original Title: {media.originalTitle}
               </p>
             )}
           </div>
@@ -139,32 +139,32 @@ export function CatalogDetailView({ media: initialMedia }: CatalogDetailViewProp
           {/* Metadata Grid Info */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 rounded-card border border-app-border bg-app-surface p-4">
             <div>
-              <span className="text-[11px] uppercase tracking-wider text-app-dim">Rilis</span>
+              <span className="text-[11px] uppercase tracking-wider text-app-dim">Release</span>
               <p className="mt-0.5 text-sm font-medium text-app-text">
                 {media.releaseDate || (media.releaseYear ? String(media.releaseYear) : '-')}
               </p>
             </div>
 
             <div>
-              <span className="text-[11px] uppercase tracking-wider text-app-dim">Durasi / Format</span>
+              <span className="text-[11px] uppercase tracking-wider text-app-dim">Duration / Format</span>
               <p className="mt-0.5 text-sm font-medium text-app-text">
                 {media.runtimeMinutes ? formatDuration(media.runtimeMinutes) : '-'}
               </p>
             </div>
 
             <div>
-              <span className="text-[11px] uppercase tracking-wider text-app-dim">Episode / Musim</span>
+              <span className="text-[11px] uppercase tracking-wider text-app-dim">Episodes / Seasons</span>
               <p className="mt-0.5 text-sm font-medium text-app-text">
                 {media.totalEpisodes
                   ? `${media.totalEpisodes} Ep`
                   : media.totalSeasons
-                  ? `${media.totalSeasons} Musim`
+                  ? `${media.totalSeasons} Seasons`
                   : '-'}
               </p>
             </div>
 
             <div>
-              <span className="text-[11px] uppercase tracking-wider text-app-dim">Rating Provider</span>
+              <span className="text-[11px] uppercase tracking-wider text-app-dim">Provider Rating</span>
               <p className="mt-0.5 text-sm font-semibold text-brand-warning">
                 {ratingLabel}
               </p>
@@ -175,7 +175,7 @@ export function CatalogDetailView({ media: initialMedia }: CatalogDetailViewProp
           {media.genres.length > 0 && (
             <div>
               <h3 className="text-xs font-semibold uppercase tracking-wider text-app-dim mb-2">
-                Genre
+                Genres
               </h3>
               <div className="flex flex-wrap gap-1.5">
                 {media.genres.map((g) => (
@@ -193,7 +193,7 @@ export function CatalogDetailView({ media: initialMedia }: CatalogDetailViewProp
           {/* Overview / Synopsis */}
           <div>
             <h3 className="text-xs font-semibold uppercase tracking-wider text-app-dim mb-2">
-              Sinopsis
+              Synopsis
             </h3>
             {media.overview ? (
               <p className="text-sm leading-relaxed text-app-muted whitespace-pre-line">
@@ -201,7 +201,7 @@ export function CatalogDetailView({ media: initialMedia }: CatalogDetailViewProp
               </p>
             ) : (
               <p className="text-sm italic text-app-dim">
-                Tidak ada sinopsis yang tersedia untuk media ini.
+                No synopsis available for this title.
               </p>
             )}
           </div>
@@ -209,7 +209,7 @@ export function CatalogDetailView({ media: initialMedia }: CatalogDetailViewProp
           {/* Provider Attribution Notice */}
           <div className="border-t border-app-border pt-4 text-xs text-app-dim">
             <p>
-              Metadata bersumber dari{' '}
+              Metadata sourced from{' '}
               <a
                 href={providerExternalUrl}
                 target="_blank"
@@ -218,7 +218,7 @@ export function CatalogDetailView({ media: initialMedia }: CatalogDetailViewProp
               >
                 {providerName}
               </a>
-              . Seluruh hak cipta dimiliki oleh pemilik lisensi masing-masing.
+              . All rights belong to their respective copyright holders.
             </p>
           </div>
         </div>

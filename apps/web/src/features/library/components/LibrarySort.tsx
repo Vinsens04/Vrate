@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useTransition } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -12,12 +12,12 @@ export function LibrarySort() {
   const [isPending, startTransition] = useTransition();
 
   const sortOptions: Array<{ value: SortOption; label: string }> = [
-    { value: 'recent', label: 'Terakhir diperbarui' },
-    { value: 'last_watched', label: 'Terakhir ditonton' },
-    { value: 'added', label: 'Terbaru ditambahkan' },
-    { value: 'title', label: 'Judul A-Z' },
-    { value: 'rating', label: 'Rating tertinggi' },
-    { value: 'year', label: 'Tahun rilis terbaru' },
+    { value: 'recent', label: 'Recently updated' },
+    { value: 'last_watched', label: 'Last watched' },
+    { value: 'added', label: 'Recently added' },
+    { value: 'title', label: 'Title (A-Z)' },
+    { value: 'rating', label: 'Highest rating' },
+    { value: 'year', label: 'Release year (newest)' },
   ];
 
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -34,23 +34,30 @@ export function LibrarySort() {
   };
 
   return (
-    <div className="flex w-full items-center gap-2 sm:w-auto">
+    <div className="flex w-full items-center gap-2.5 sm:w-auto">
       <label htmlFor="library-sort-select" className="vr-label whitespace-nowrap">
-        Urut
+        Sort
       </label>
-      <select
-        id="library-sort-select"
-        value={currentSort}
-        onChange={handleSortChange}
-        disabled={isPending}
-        className="vr-control w-full pr-8 sm:w-56"
-      >
-        {sortOptions.map(opt => (
-          <option key={opt.value} value={opt.value} className="bg-app-surface text-app-text">
-            {opt.label}
-          </option>
-        ))}
-      </select>
+      <div className="relative w-full sm:w-52">
+        <select
+          id="library-sort-select"
+          value={currentSort}
+          onChange={handleSortChange}
+          disabled={isPending}
+          className="vr-control w-full appearance-none pr-8 text-xs font-medium sm:text-sm"
+        >
+          {sortOptions.map(opt => (
+            <option key={opt.value} value={opt.value} className="bg-app-surface text-app-text">
+              {opt.label}
+            </option>
+          ))}
+        </select>
+        <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-app-dim" aria-hidden="true">
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+          </svg>
+        </div>
+      </div>
     </div>
   );
 }

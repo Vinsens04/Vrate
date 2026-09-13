@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useEffect } from 'react';
 
@@ -16,12 +16,12 @@ export default function LibraryError({
   return (
     <div className="border-y border-app-border py-12 text-center">
       <p className="vr-label text-brand-danger">Error</p>
-      <h2 className="mt-3 text-2xl font-semibold text-app-text">Library gagal dimuat.</h2>
+      <h2 className="mt-3 text-2xl font-semibold text-app-text">Failed to load library.</h2>
       <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-app-muted">
-        Data koleksi tidak bisa diambil sekarang. Coba muat ulang halaman ini.
+        Could not load your library data. Please try refreshing the page.
       </p>
       <button type="button" onClick={() => reset()} className="vr-primary mt-7">
-        Coba lagi
+        Try again
       </button>
     </div>
   );

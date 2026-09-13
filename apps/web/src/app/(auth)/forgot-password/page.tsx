@@ -1,17 +1,17 @@
-﻿import type { Metadata } from 'next';
+import type { Metadata } from 'next';
 import { AuthCard } from '@/features/auth/components/AuthCard';
 import { ForgotPasswordForm } from '@/features/auth/components/ForgotPasswordForm';
 
 export const metadata: Metadata = {
-  title: 'Lupa Kata Sandi - Vrate',
-  description: 'Atur ulang kata sandi akun Vrate.',
+  title: 'Forgot Password - Vrate',
+  description: 'Reset your Vrate account password.',
 };
 
 export default function ForgotPasswordPage() {
   return (
     <AuthCard
-      title="Atur ulang kata sandi"
-      subtitle="Masukkan email terdaftar untuk menerima tautan pemulihan."
+      title="Reset password"
+      subtitle="Enter your registered email to receive a reset link."
     >
       <ForgotPasswordForm />
     </AuthCard>

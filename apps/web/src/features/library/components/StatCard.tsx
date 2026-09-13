@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import Link from 'next/link';
 
 interface StatCardProps {
@@ -20,7 +20,7 @@ export function StatCard({ label, count, statusKey, icon }: StatCardProps) {
       </div>
       <div className="mt-3 flex items-baseline gap-2">
         <span className="text-3xl font-semibold tracking-tight text-app-text">{count}</span>
-        <span className="text-xs text-app-dim">media</span>
+        <span className="text-xs text-app-dim">titles</span>
       </div>
     </Link>
   );

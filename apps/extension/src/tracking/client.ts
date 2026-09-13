@@ -44,7 +44,7 @@ export async function startActiveTabTracking(params: {
   durationSeconds?: number | null;
 }): Promise<{ success: boolean; session?: TabTrackingSession | null; error?: string }> {
   if (typeof chrome === 'undefined' || !chrome.runtime?.sendMessage) {
-    return { success: false, error: 'Runtime ekstensi tidak tersedia.' };
+    return { success: false, error: 'Extension runtime unavailable.' };
   }
 
   try {
@@ -53,11 +53,11 @@ export async function startActiveTabTracking(params: {
       payload: params,
     });
 
-    return res || { success: false, error: 'Tidak ada respons dari background.' };
+    return res || { success: false, error: 'No response from background.' };
   } catch (err: unknown) {
     return {
       success: false,
-      error: err instanceof Error ? err.message : 'Gagal memulai tracking.',
+      error: err instanceof Error ? err.message : 'Failed to start tracking.',
     };
   }
 }
@@ -85,7 +85,7 @@ export async function markActiveTabEpisodeCompleted(params?: {
   seasonNumber?: number | null;
 }): Promise<{ success: boolean; error?: string }> {
   if (typeof chrome === 'undefined' || !chrome.runtime?.sendMessage) {
-    return { success: false, error: 'Runtime ekstensi tidak tersedia.' };
+    return { success: false, error: 'Extension runtime unavailable.' };
   }
 
   try {
@@ -93,9 +93,9 @@ export async function markActiveTabEpisodeCompleted(params?: {
       type: 'TRACKING_MARK_COMPLETED',
       payload: params || {},
     });
-    return res || { success: false, error: 'Tidak ada respons.' };
+    return res || { success: false, error: 'No response.' };
   } catch (err: unknown) {
-    return { success: false, error: err instanceof Error ? err.message : 'Gagal menandai selesai.' };
+    return { success: false, error: err instanceof Error ? err.message : 'Failed to mark episode as completed.' };
   }
 }
 
@@ -105,7 +105,7 @@ export async function deleteActiveTabEpisodeProgress(params?: {
   seasonNumber?: number | null;
 }): Promise<{ success: boolean; error?: string }> {
   if (typeof chrome === 'undefined' || !chrome.runtime?.sendMessage) {
-    return { success: false, error: 'Runtime ekstensi tidak tersedia.' };
+    return { success: false, error: 'Extension runtime unavailable.' };
   }
 
   try {
@@ -113,9 +113,9 @@ export async function deleteActiveTabEpisodeProgress(params?: {
       type: 'TRACKING_DELETE_PROGRESS',
       payload: params || {},
     });
-    return res || { success: false, error: 'Tidak ada respons.' };
+    return res || { success: false, error: 'No response.' };
   } catch (err: unknown) {
-    return { success: false, error: err instanceof Error ? err.message : 'Gagal menghapus progres.' };
+    return { success: false, error: err instanceof Error ? err.message : 'Failed to delete progress.' };
   }
 }
 
@@ -126,7 +126,7 @@ export async function correctActiveTabEpisode(params: {
   seasonNumber?: number | null;
 }): Promise<{ success: boolean; error?: string }> {
   if (typeof chrome === 'undefined' || !chrome.runtime?.sendMessage) {
-    return { success: false, error: 'Runtime ekstensi tidak tersedia.' };
+    return { success: false, error: 'Extension runtime unavailable.' };
   }
 
   try {
@@ -134,14 +134,14 @@ export async function correctActiveTabEpisode(params: {
       type: 'TRACKING_CORRECT_EPISODE',
       payload: params,
     });
-    return res || { success: false, error: 'Tidak ada respons.' };
+    return res || { success: false, error: 'No response.' };
   } catch (err: unknown) {
-    return { success: false, error: err instanceof Error ? err.message : 'Gagal memperbaiki episode.' };
+    return { success: false, error: err instanceof Error ? err.message : 'Failed to correct episode.' };
   }
 }
 
 /**
- * Human-readable status label in Indonesian.
+ * Human-readable status label in English.
  */
 export function formatTrackingStatus(status: TrackingStatus): {
   label: string;
@@ -149,26 +149,26 @@ export function formatTrackingStatus(status: TrackingStatus): {
 } {
   switch (status) {
     case 'tracking':
-      return { label: 'Sedang Melacak', color: '#5DBB8A' };
+      return { label: 'Tracking', color: '#5DBB8A' };
     case 'paused':
-      return { label: 'Dijeda', color: '#E5A93C' };
+      return { label: 'Paused', color: '#E5A93C' };
     case 'syncing':
-      return { label: 'Menyinkronkan...', color: '#FF5C35' };
+      return { label: 'Syncing...', color: '#FF5C35' };
     case 'synced':
-      return { label: 'Tersinkron', color: '#5DBB8A' };
+      return { label: 'Synced', color: '#5DBB8A' };
     case 'offline_queued':
-      return { label: 'Tersimpan Offline', color: '#E5A93C' };
+      return { label: 'Queued Offline', color: '#E5A93C' };
     case 'waiting_video':
-      return { label: 'Menunggu Player Video', color: '#888888' };
+      return { label: 'Waiting for Video Player', color: '#888888' };
     case 'video_detected':
-      return { label: 'Video Terdeteksi', color: '#5DBB8A' };
+      return { label: 'Video Detected', color: '#5DBB8A' };
     case 'unsupported_iframe':
-      return { label: 'Player Embed (Iframe Terpisah)', color: '#E57373' };
+      return { label: 'Embedded Player (Cross-origin Iframe)', color: '#E57373' };
     case 'error':
-      return { label: 'Gagal Sinkronisasi', color: '#FF4D4D' };
+      return { label: 'Sync Error', color: '#FF4D4D' };
     case 'idle':
     default:
-      return { label: 'Siap Melacak', color: '#888888' };
+      return { label: 'Ready to Track', color: '#888888' };
   }
 }
 

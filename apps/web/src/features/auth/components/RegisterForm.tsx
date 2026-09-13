@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useActionState, useState } from 'react';
 import Link from 'next/link';
@@ -18,14 +18,14 @@ export function RegisterForm({ googleAuthEnabled = false }: RegisterFormProps) {
     return (
       <div className="space-y-5 border border-app-border bg-app-surface p-5 text-center">
         <div>
-          <h3 className="text-lg font-semibold text-app-text">Periksa email kamu</h3>
+          <h3 className="text-lg font-semibold text-app-text">Check your email</h3>
           <p className="mt-2 text-sm leading-7 text-app-muted">
-            Tautan konfirmasi sudah dikirim ke <span className="font-semibold text-app-text">{state.email}</span>.
+            A confirmation link has been sent to <span className="font-semibold text-app-text">{state.email}</span>.
           </p>
-          <p className="mt-1 text-sm text-app-dim">Buka tautan itu untuk mengaktifkan akun sebelum masuk.</p>
+          <p className="mt-1 text-sm text-app-dim">Click the link to activate your account before signing in.</p>
         </div>
         <Link href="/login" className="vr-primary w-full">
-          Kembali masuk
+          Back to sign in
         </Link>
       </div>
     );
@@ -50,7 +50,7 @@ export function RegisterForm({ googleAuthEnabled = false }: RegisterFormProps) {
             type="email"
             autoComplete="email"
             required
-            placeholder="nama@email.com"
+            placeholder="name@email.com"
             disabled={isPending}
             className="vr-control mt-2 w-full"
           />
@@ -59,9 +59,9 @@ export function RegisterForm({ googleAuthEnabled = false }: RegisterFormProps) {
         <div>
           <div className="flex items-center justify-between gap-4">
             <label htmlFor="password" className="vr-label">
-              Kata sandi
+              Password
             </label>
-            <span className="text-xs text-app-dim">Minimal 8 karakter</span>
+            <span className="text-xs text-app-dim">At least 8 characters</span>
           </div>
           <div className="relative mt-2">
             <input
@@ -79,7 +79,7 @@ export function RegisterForm({ googleAuthEnabled = false }: RegisterFormProps) {
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute inset-y-0 right-0 flex min-w-11 items-center justify-center text-app-dim transition hover:text-app-text"
-              aria-label={showPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
               {showPassword ? 'Hide' : 'Show'}
             </button>
@@ -88,7 +88,7 @@ export function RegisterForm({ googleAuthEnabled = false }: RegisterFormProps) {
 
         <div>
           <label htmlFor="confirmPassword" className="vr-label">
-            Konfirmasi kata sandi
+            Confirm password
           </label>
           <div className="relative mt-2">
             <input
@@ -106,7 +106,7 @@ export function RegisterForm({ googleAuthEnabled = false }: RegisterFormProps) {
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               className="absolute inset-y-0 right-0 flex min-w-11 items-center justify-center text-app-dim transition hover:text-app-text"
-              aria-label={showConfirmPassword ? 'Sembunyikan konfirmasi kata sandi' : 'Tampilkan konfirmasi kata sandi'}
+              aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
             >
               {showConfirmPassword ? 'Hide' : 'Show'}
             </button>
@@ -123,29 +123,29 @@ export function RegisterForm({ googleAuthEnabled = false }: RegisterFormProps) {
             className="mt-1 h-4 w-4 rounded border-app-border bg-app-surface text-brand-primary focus:ring-brand-primary focus:ring-offset-app-bg"
           />
           <label htmlFor="agreeTerms" className="text-sm leading-6 text-app-muted">
-            Saya menyetujui{' '}
+            I agree to the{' '}
             <Link href="/terms-placeholder" className="vr-link">
-              Ketentuan Layanan
+              Terms of Service
             </Link>{' '}
-            dan{' '}
+            and{' '}
             <Link href="/terms-placeholder" className="vr-link">
-              Kebijakan Privasi
+              Privacy Policy
             </Link>
             .
           </label>
         </div>
 
         <button type="submit" disabled={isPending} className="vr-primary w-full">
-          {isPending ? 'Mendaftarkan' : 'Buat akun'}
+          {isPending ? 'Registering...' : 'Create account'}
         </button>
       </form>
 
       {googleAuthEnabled && <GoogleAuthButton redirectTo="/dashboard" />}
 
       <p className="text-center text-sm text-app-muted">
-        Sudah punya akun?{' '}
+        Already have an account?{' '}
         <Link href="/login" className="vr-link">
-          Masuk
+          Sign in
         </Link>
       </p>
     </div>

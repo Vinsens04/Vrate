@@ -18,8 +18,8 @@ export function ConnectedAccount({
 }: ConnectedAccountProps) {
   const [isOpeningDashboard, setIsOpeningDashboard] = useState(false);
 
-  const displayName = profile?.displayName || user.displayName || 'Pengguna Vrate';
-  const email = user.email || 'Akun Vrate';
+  const displayName = profile?.displayName || user.displayName || 'Vrate User';
+  const email = user.email || 'Vrate Account';
   const avatarUrl = profile?.avatarUrl || user.avatarUrl;
 
   const initial = (displayName.charAt(0) || email.charAt(0) || 'V').toUpperCase();
@@ -85,7 +85,7 @@ export function ConnectedAccount({
             <polyline points="15 3 21 3 21 9" />
             <line x1="10" y1="14" x2="21" y2="3" />
           </svg>
-          {isOpeningDashboard ? 'Membuka...' : 'Buka Dashboard'}
+          {isOpeningDashboard ? 'Opening...' : 'Open Dashboard'}
         </button>
 
         <button
@@ -94,7 +94,7 @@ export function ConnectedAccount({
           onClick={onSignOut}
           disabled={isSigningOut || isOpeningDashboard}
         >
-          {isSigningOut ? 'Keluar...' : 'Keluar dari Ekstensi'}
+          {isSigningOut ? 'Signing out...' : 'Sign out of Extension'}
         </button>
       </div>
     </div>

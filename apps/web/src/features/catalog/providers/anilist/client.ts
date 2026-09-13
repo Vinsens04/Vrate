@@ -70,14 +70,14 @@ async function fetchAniListGraphQL<T>(
   }
 
   if (lastError instanceof Error && lastError.name === 'TimeoutError') {
-    throw new Error('Permintaan ke AniList melebihi batas waktu (timeout).');
+    throw new Error('Request to AniList timed out.');
   }
 
   if (lastError instanceof Error) {
     throw lastError;
   }
 
-  throw new Error('Gagal terhubung ke layanan AniList.');
+  throw new Error('Failed to connect to AniList service.');
 }
 
 /**
@@ -217,7 +217,7 @@ export async function searchAniList(
         available: false,
         hasNextPage: false,
         results: [],
-        error: 'Format data respon AniList tidak valid.',
+        error: 'Invalid AniList response data format.',
       };
     }
 
@@ -226,7 +226,7 @@ export async function searchAniList(
       const fallback = await searchAnimeFallback(query, page, perPage);
       if (fallback.results.length > 0) return fallback;
 
-      const firstError = parsed.data.errors[0]?.message || 'Kesalahan GraphQL AniList.';
+      const firstError = parsed.data.errors[0]?.message || 'AniList GraphQL error.';
       return {
         available: false,
         hasNextPage: false,
@@ -410,7 +410,7 @@ async function fetchKitsuFallbackDetail(anilistId: number): Promise<CatalogMedia
 export async function getAniListDetail(id: number | string): Promise<CatalogMedia> {
   const numericId = typeof id === 'number' ? id : parseInt(id, 10);
   if (isNaN(numericId) || numericId <= 0) {
-    throw new Error('ID anime AniList tidak valid.');
+    throw new Error('Invalid AniList anime ID.');
   }
 
   try {
@@ -440,5 +440,5 @@ export async function getAniListDetail(id: number | string): Promise<CatalogMedi
     return kitsuFallback;
   }
 
-  throw new Error('Gagal memuat detail anime dari AniList maupun basis data cadangan.');
+  throw new Error('Failed to load anime details from AniList or fallback sources.');
 }

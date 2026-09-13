@@ -31,8 +31,8 @@ export async function addToLibraryAction(
   if (authError || !user) {
     return {
       success: false,
-      error: 'Silakan masuk terlebih dahulu untuk menambahkan media ke library.',
-      message: 'Autentikasi diperlukan.',
+      error: 'Please sign in to add media to your library.',
+      message: 'Authentication required.',
     };
   }
 
@@ -43,7 +43,7 @@ export async function addToLibraryAction(
     return {
       success: false,
       error: errorMsg,
-      message: 'Parameter tidak valid.',
+      message: 'Invalid parameters.',
     };
   }
 
@@ -62,7 +62,7 @@ export async function addToLibraryAction(
     return {
       success: false,
       error: canonicalResult.error,
-      message: 'Gagal memproses katalog media.',
+      message: 'Failed to process media catalog.',
     };
   }
 
@@ -77,7 +77,7 @@ export async function addToLibraryAction(
   if (!libraryResult.success) {
     return {
       success: false,
-      error: libraryResult.error || 'Gagal menambahkan media ke library.',
+      error: libraryResult.error || 'Failed to add media to library.',
       message: libraryResult.message,
     };
   }

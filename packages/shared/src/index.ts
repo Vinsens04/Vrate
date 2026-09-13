@@ -167,12 +167,14 @@ export interface ResolvedMediaItem {
   inLibrary: boolean;
   libraryEntryId?: string | null;
   libraryStatus?: LibraryStatus | null;
+  matchScore?: number;
 }
 
 export interface ResolveMediaResponse {
   success: boolean;
   candidates: ResolvedMediaItem[];
   exactMatch: boolean;
+  cleanedTitle?: string;
   error?: string;
   message?: string;
 }
@@ -233,9 +235,9 @@ export const trackingEventTypeSchema = z.enum(TRACKING_EVENT_TYPES);
 export type TrackingEventType = z.infer<typeof trackingEventTypeSchema>;
 
 export const startTrackingRequestSchema = z.object({
-  clientSessionId: z.string().uuid('clientSessionId harus format UUID valid'),
-  libraryEntryId: z.string().uuid('libraryEntryId harus format UUID valid'),
-  mediaId: z.string().uuid('mediaId harus format UUID valid').optional(),
+  clientSessionId: z.string().uuid('clientSessionId must be a valid UUID'),
+  libraryEntryId: z.string().uuid('libraryEntryId must be a valid UUID'),
+  mediaId: z.string().uuid('mediaId must be a valid UUID').optional(),
   episodeNumber: z.number().int().positive().nullable().optional(),
   seasonNumber: z.number().int().nonnegative().nullable().optional(),
   sourceName: z.string().min(1).max(64),
@@ -247,8 +249,8 @@ export const startTrackingRequestSchema = z.object({
 export type StartTrackingRequest = z.infer<typeof startTrackingRequestSchema>;
 
 export const checkpointTrackingRequestSchema = z.object({
-  clientSessionId: z.string().uuid('clientSessionId harus format UUID valid'),
-  libraryEntryId: z.string().uuid('libraryEntryId harus format UUID valid'),
+  clientSessionId: z.string().uuid('clientSessionId must be a valid UUID'),
+  libraryEntryId: z.string().uuid('libraryEntryId must be a valid UUID'),
   episodeNumber: z.number().int().positive().nullable().optional(),
   seasonNumber: z.number().int().nonnegative().nullable().optional(),
   progressSeconds: z.number().min(0).max(86400),
@@ -261,8 +263,8 @@ export const checkpointTrackingRequestSchema = z.object({
 export type CheckpointTrackingRequest = z.infer<typeof checkpointTrackingRequestSchema>;
 
 export const stopTrackingRequestSchema = z.object({
-  clientSessionId: z.string().uuid('clientSessionId harus format UUID valid'),
-  libraryEntryId: z.string().uuid('libraryEntryId harus format UUID valid'),
+  clientSessionId: z.string().uuid('clientSessionId must be a valid UUID'),
+  libraryEntryId: z.string().uuid('libraryEntryId must be a valid UUID'),
   episodeNumber: z.number().int().positive().nullable().optional(),
   seasonNumber: z.number().int().nonnegative().nullable().optional(),
   finalProgressSeconds: z.number().min(0).max(86400),
@@ -287,21 +289,21 @@ export const AUTO_TRACK_CONFIRMATION_SECONDS = 30;
 export const AUTO_COMPLETE_DEFAULT_THRESHOLD_PERCENT = 90;
 
 export const markEpisodeCompletedRequestSchema = z.object({
-  libraryEntryId: z.string().uuid('libraryEntryId harus format UUID valid'),
+  libraryEntryId: z.string().uuid('libraryEntryId must be a valid UUID'),
   episodeNumber: z.number().int().positive(),
   seasonNumber: z.number().int().nonnegative().nullable().optional(),
 });
 export type MarkEpisodeCompletedRequest = z.infer<typeof markEpisodeCompletedRequestSchema>;
 
 export const deleteEpisodeProgressRequestSchema = z.object({
-  libraryEntryId: z.string().uuid('libraryEntryId harus format UUID valid'),
+  libraryEntryId: z.string().uuid('libraryEntryId must be a valid UUID'),
   episodeNumber: z.number().int().positive(),
   seasonNumber: z.number().int().nonnegative().nullable().optional(),
 });
 export type DeleteEpisodeProgressRequest = z.infer<typeof deleteEpisodeProgressRequestSchema>;
 
 export const correctEpisodeRequestSchema = z.object({
-  libraryEntryId: z.string().uuid('libraryEntryId harus format UUID valid'),
+  libraryEntryId: z.string().uuid('libraryEntryId must be a valid UUID'),
   currentEpisodeNumber: z.number().int().positive(),
   correctedEpisodeNumber: z.number().int().positive(),
   seasonNumber: z.number().int().nonnegative().nullable().optional(),

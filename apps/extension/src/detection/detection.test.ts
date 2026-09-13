@@ -4,7 +4,14 @@ import assert from 'node:assert/strict';
 import { MiruroDetector } from './adapters/miruro.ts';
 import { GenericDetector } from './adapters/generic.ts';
 import { isMiruroHost, isMiruroWatchUrl, parseEpisodeParam, safeDecodeSlug, safeParseUrl } from './url.ts';
-import { extractJsonLdMetadata, extractMainHeading, extractOpenGraphMetadata, sanitizeTitle } from './sanitizers.ts';
+import {
+  cleanMediaTitle,
+  extractEpisodeAndSeason,
+  extractJsonLdMetadata,
+  extractMainHeading,
+  extractOpenGraphMetadata,
+  sanitizeTitle,
+} from './sanitizers.ts';
 import { defaultEngine } from './engine.ts';
 import {
   handleDetectionMessage,
@@ -346,7 +353,7 @@ test('Security & Messaging: 23. Invalid or spoofed detection message is rejected
   ) as { success: boolean; error?: string };
 
   assert.equal(res.success, false);
-  assert.match(res.error || '', /Domain miruro tidak cocok/i);
+  assert.match(res.error || '', /Miruro domain does not match/i);
 });
 
 test('Security & Messaging: 24. Sender tab is the authoritative source for tab ID and URL', async () => {
@@ -483,3 +490,60 @@ test('Security & Messaging: 30. Manifest configuration does not use <all_urls>',
   const allowed = MIRURO_PERMISSIONS.origins;
   assert.equal(allowed.includes('<all_urls>'), false);
 });
+
+// ------------------------------------------------------------------------------
+// Test Suite 5: Enhanced Title Cleaning & Probable Match Resolution (Tests 41 - 45)
+// ------------------------------------------------------------------------------
+
+test('Title Cleaning: 41. Strips noisy streaming prefixes, episodes, and site branding', () => {
+  assert.equal(
+    cleanMediaTitle('Nonton One Piece Episode 1120 Sub Indo Gratis - Anoboy'),
+    'One Piece'
+  );
+  assert.equal(
+    cleanMediaTitle('Watch Bleach: Thousand-Year Blood War - Episode 12 English Subbed Online'),
+    'Bleach: Thousand-Year Blood War'
+  );
+  assert.equal(
+    cleanMediaTitle('Chainsaw Man S01E03 [1080p] [Multi-Sub] - Otakudesu'),
+    'Chainsaw Man'
+  );
+});
+
+test('Title Cleaning: 42. Extracts episode and season numbers accurately', () => {
+  const meta1 = extractEpisodeAndSeason('One Piece Episode 1120 Sub Indo');
+  assert.equal(meta1.episode, 1120);
+
+  const meta2 = extractEpisodeAndSeason('Stranger Things Season 4 Episode 1 720p');
+  assert.equal(meta2.season, 4);
+  assert.equal(meta2.episode, 1);
+
+  const meta3 = extractEpisodeAndSeason('Jujutsu Kaisen S2 Ep 05 [1080p]');
+  assert.equal(meta3.season, 2);
+  assert.equal(meta3.episode, 5);
+});
+
+test('Generic Detector: 43. Generic detector extracts episode and cleans titleHint on noisy page title', () => {
+  const detector = new GenericDetector();
+  const candidate = detector.detect({
+    url: new URL('https://nontonanime.test/watch/one-piece-1120'),
+    documentTitle: 'Nonton One Piece Episode 1120 Sub Indo Gratis - Anoboy',
+  });
+
+  assert.ok(candidate);
+  assert.equal(candidate.titleHint, 'One Piece');
+  assert.equal(candidate.episodeNumber, 1120);
+  assert.equal(candidate.provider, 'unknown');
+});
+
+test('Title Cleaning: 44. Preserves genuine title words like Watchmen', () => {
+  assert.equal(cleanMediaTitle('Watchmen'), 'Watchmen');
+  assert.equal(cleanMediaTitle('Watchmen (2009) 1080p BluRay'), 'Watchmen (2009)');
+});
+
+test('Title Cleaning: 45. Year extraction succeeds on film titles', () => {
+  const meta = extractEpisodeAndSeason('Spider-Man: Across the Spider-Verse (2023) Full Movie');
+  assert.equal(meta.year, 2023);
+  assert.equal(cleanMediaTitle('Spider-Man: Across the Spider-Verse (2023) Full Movie [Sub Indo]'), 'Spider-Man: Across the Spider-Verse (2023)');
+});
+

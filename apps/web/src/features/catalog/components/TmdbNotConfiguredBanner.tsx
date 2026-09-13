@@ -19,11 +19,11 @@ export function TmdbNotConfiguredBanner() {
         </svg>
         <div className="space-y-1">
           <p className="font-semibold text-app-text">
-            Katalog Film & Serial TV (TMDB) Belum Terhubung
+            Movie & TV Show Catalog (TMDB) Not Configured
           </p>
           <p className="text-app-muted leading-relaxed">
-            Pencarian anime dari <span className="font-medium text-app-text">AniList</span> tetap berfungsi normal.
-            Untuk mengaktifkan katalog film dan serial dari TMDB, peroleh <span className="font-mono text-app-text">API Read Access Token</span> dari pengaturan akun TMDB Anda, lalu tambahkan ke file <span className="font-mono text-app-text">apps/web/.env.local</span>:
+            Anime search via <span className="font-medium text-app-text">AniList</span> remains fully functional.
+            To enable movie and series discovery from TMDB, obtain an <span className="font-mono text-app-text">API Read Access Token</span> from your TMDB account settings, and add it to <span className="font-mono text-app-text">apps/web/.env.local</span>:
           </p>
           <div className="mt-2 rounded bg-app-bg/80 p-2 font-mono text-[11px] text-app-text border border-app-border">
             TMDB_API_READ_TOKEN=your_v4_read_access_token_here

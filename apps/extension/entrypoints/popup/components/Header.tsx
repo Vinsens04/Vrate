@@ -7,23 +7,23 @@ interface HeaderProps {
 
 export function Header({ state }: HeaderProps) {
   let badgeClass = 'status-badge unconnected';
-  let badgeLabel = 'Belum Masuk';
+  let badgeLabel = 'Not Signed In';
 
   if (state === 'signed_in') {
     badgeClass = 'status-badge connected';
-    badgeLabel = 'Terhubung';
+    badgeLabel = 'Connected';
   } else if (state === 'loading') {
     badgeClass = 'status-badge';
-    badgeLabel = 'Memeriksa...';
+    badgeLabel = 'Checking...';
   } else if (state === 'offline') {
     badgeClass = 'status-badge';
     badgeLabel = 'Offline';
   } else if (state === 'expired') {
     badgeClass = 'status-badge unconnected';
-    badgeLabel = 'Sesi Berakhir';
+    badgeLabel = 'Session Expired';
   } else if (state === 'unconfigured') {
     badgeClass = 'status-badge unconnected';
-    badgeLabel = 'Konfigurasi';
+    badgeLabel = 'Unconfigured';
   }
 
   return (

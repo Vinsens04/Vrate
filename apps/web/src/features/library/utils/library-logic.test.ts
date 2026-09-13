@@ -134,10 +134,10 @@ test('updateNotesSchema: validates maximum 2000 chars and trims', () => {
   const validUuid = 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11';
 
   // Valid notes
-  const ok = updateNotesSchema.safeParse({ entryId: validUuid, notes: 'Film yang luar biasa!' });
+  const ok = updateNotesSchema.safeParse({ entryId: validUuid, notes: 'An extraordinary movie!' });
   assert.equal(ok.success, true);
   if (ok.success) {
-    assert.equal(ok.data.notes, 'Film yang luar biasa!');
+    assert.equal(ok.data.notes, 'An extraordinary movie!');
   }
 
   // Whitespace only transforms to null
@@ -160,12 +160,12 @@ test('updateStatusSchema: validates allowed enum values', () => {
 });
 
 test('format helpers: formatDuration & formatStatusLabel', () => {
-  assert.equal(formatStatusLabel('watching'), 'Sedang Ditonton');
-  assert.equal(formatStatusLabel('completed'), 'Selesai');
-  assert.equal(formatStatusLabel('all'), 'Semua');
+  assert.equal(formatStatusLabel('watching'), 'Watching');
+  assert.equal(formatStatusLabel('completed'), 'Completed');
+  assert.equal(formatStatusLabel('all'), 'All');
 
-  assert.equal(formatDuration(142), '2j 22m');
-  assert.equal(formatDuration(60), '1j');
+  assert.equal(formatDuration(142), '2h 22m');
+  assert.equal(formatDuration(60), '1h');
   assert.equal(formatDuration(45), '45m');
   assert.equal(formatDuration(null), '-');
 });

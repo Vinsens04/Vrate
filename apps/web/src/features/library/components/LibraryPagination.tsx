@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React from 'react';
 import Link from 'next/link';
@@ -30,21 +30,21 @@ export function LibraryPagination({
   const nextHref = currentPage < totalPages ? buildLibraryUrl('/dashboard/library', currentParams, { page: currentPage + 1 }) : null;
 
   return (
-    <nav aria-label="Navigasi halaman koleksi" className="flex flex-col items-center justify-between gap-4 border-t border-app-border pt-6 sm:flex-row">
+    <nav aria-label="Library pagination" className="flex flex-col items-center justify-between gap-4 border-t border-app-border pt-6 sm:flex-row">
       <div className="text-sm text-app-dim">
-        <span className="font-medium text-app-text">{startItem}-{endItem}</span> dari{' '}
-        <span className="font-medium text-app-text">{totalCount}</span> judul
+        <span className="font-medium text-app-text">{startItem}-{endItem}</span> of{' '}
+        <span className="font-medium text-app-text">{totalCount}</span> titles
       </div>
 
       {totalPages > 1 && (
         <div className="flex items-center gap-2">
           {prevHref ? (
             <Link href={prevHref} className="vr-secondary min-h-[40px] px-3.5 py-2 text-xs">
-              Sebelumnya
+              Previous
             </Link>
           ) : (
             <span className="inline-flex min-h-[40px] cursor-not-allowed items-center border border-app-border px-3.5 py-2 text-xs font-semibold text-app-dim opacity-50">
-              Sebelumnya
+              Previous
             </span>
           )}
 
@@ -54,11 +54,11 @@ export function LibraryPagination({
 
           {nextHref ? (
             <Link href={nextHref} className="vr-secondary min-h-[40px] px-3.5 py-2 text-xs">
-              Berikutnya
+              Next
             </Link>
           ) : (
             <span className="inline-flex min-h-[40px] cursor-not-allowed items-center border border-app-border px-3.5 py-2 text-xs font-semibold text-app-dim opacity-50">
-              Berikutnya
+              Next
             </span>
           )}
         </div>

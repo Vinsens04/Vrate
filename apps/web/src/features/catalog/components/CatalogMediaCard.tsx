@@ -32,8 +32,8 @@ export function CatalogMediaCard({ media: initialMedia, onAdded }: CatalogMediaC
     media.category === 'anime'
       ? 'Anime'
       : media.mediaType === 'movie'
-      ? 'Film'
-      : 'Serial';
+      ? 'Movie'
+      : 'Series';
 
   return (
     <>
@@ -42,7 +42,7 @@ export function CatalogMediaCard({ media: initialMedia, onAdded }: CatalogMediaC
         <Link
           href={detailUrl}
           className="relative aspect-2/3 w-full overflow-hidden bg-app-secondary focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
-          aria-label={`Lihat detail ${media.title}`}
+          aria-label={`View details for ${media.title}`}
         >
           <CatalogPoster
             posterUrl={media.posterUrl}
@@ -118,7 +118,7 @@ export function CatalogMediaCard({ media: initialMedia, onAdded }: CatalogMediaC
                 <svg className="h-3.5 w-3.5 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                 </svg>
-                <span>Sudah di Library</span>
+                <span>In Library</span>
               </Link>
             ) : (
               <button
@@ -126,7 +126,7 @@ export function CatalogMediaCard({ media: initialMedia, onAdded }: CatalogMediaC
                 onClick={() => setIsModalOpen(true)}
                 className="vr-secondary min-h-[34px] w-full px-3 py-1 text-xs font-medium hover:border-brand-primary hover:text-brand-primary"
               >
-                + Tambah
+                + Add
               </button>
             )}
           </div>

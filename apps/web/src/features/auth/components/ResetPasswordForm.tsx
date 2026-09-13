@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useActionState, useState } from 'react';
 import Link from 'next/link';
@@ -21,9 +21,9 @@ export function ResetPasswordForm() {
         <div>
           <div className="flex items-center justify-between gap-4">
             <label htmlFor="password" className="vr-label">
-              Kata sandi baru
+              New password
             </label>
-            <span className="text-xs text-app-dim">Minimal 8 karakter</span>
+            <span className="text-xs text-app-dim">At least 8 characters</span>
           </div>
           <div className="relative mt-2">
             <input
@@ -41,7 +41,7 @@ export function ResetPasswordForm() {
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute inset-y-0 right-0 flex min-w-11 items-center justify-center text-app-dim transition hover:text-app-text"
-              aria-label={showPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
               {showPassword ? 'Hide' : 'Show'}
             </button>
@@ -50,7 +50,7 @@ export function ResetPasswordForm() {
 
         <div>
           <label htmlFor="confirmPassword" className="vr-label">
-            Konfirmasi kata sandi baru
+            Confirm new password
           </label>
           <div className="relative mt-2">
             <input
@@ -68,7 +68,7 @@ export function ResetPasswordForm() {
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               className="absolute inset-y-0 right-0 flex min-w-11 items-center justify-center text-app-dim transition hover:text-app-text"
-              aria-label={showConfirmPassword ? 'Sembunyikan konfirmasi kata sandi' : 'Tampilkan konfirmasi kata sandi'}
+              aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
             >
               {showConfirmPassword ? 'Hide' : 'Show'}
             </button>
@@ -76,14 +76,14 @@ export function ResetPasswordForm() {
         </div>
 
         <button type="submit" disabled={isPending} className="vr-primary w-full">
-          {isPending ? 'Menyimpan' : 'Simpan kata sandi'}
+          {isPending ? 'Saving...' : 'Save password'}
         </button>
       </form>
 
       <p className="text-center text-sm text-app-muted">
-        Batal?{' '}
+        Cancel?{' '}
         <Link href="/login" className="vr-link">
-          Kembali masuk
+          Back to sign in
         </Link>
       </p>
     </div>

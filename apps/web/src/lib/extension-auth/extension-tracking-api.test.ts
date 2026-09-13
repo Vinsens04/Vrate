@@ -536,7 +536,7 @@ test('Library Logic: 11. formatEpisodeBadge correctly formats movie, single seas
   }, 3);
   assert.equal(multiSeasonBadge, 'S2E2 • 34%');
 
-  // Completed episode: "E2 • Selesai"
+  // Completed episode: "E2 • Completed"
   const completedBadge = formatEpisodeBadge('series', {
     id: 'ep-4',
     libraryEntryId: 'entry-1',
@@ -549,7 +549,7 @@ test('Library Logic: 11. formatEpisodeBadge correctly formats movie, single seas
     lastWatchedAt: '2026-09-09T00:00:00Z',
     updatedAt: '2026-09-09T00:00:00Z',
   });
-  assert.equal(completedBadge, 'E2 • Selesai');
+  assert.equal(completedBadge, 'E2 • Completed');
 });
 
 test('Library Logic: 12. mapDbEntryToViewModel selects latestEpisodeProgress by last_watched_at DESC, not highest episode', () => {

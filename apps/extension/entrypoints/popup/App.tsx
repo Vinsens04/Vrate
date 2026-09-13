@@ -49,7 +49,7 @@ export default function App() {
       setErrorMessage(
         err instanceof Error
           ? err.message
-          : 'Gagal menghubungkan popup ke background worker.'
+          : 'Failed to connect popup to background worker.'
       );
     }
   }, []);
@@ -74,11 +74,11 @@ export default function App() {
         setProfile(response.profile || null);
         setErrorMessage(null);
       } else {
-        setErrorMessage(response?.error || 'Gagal masuk. Periksa email dan kata sandi Anda.');
+        setErrorMessage(response?.error || 'Failed to sign in. Please check your email and password.');
       }
     } catch (err: unknown) {
       setErrorMessage(
-        err instanceof Error ? err.message : 'Terjadi kesalahan saat mencoba masuk.'
+        err instanceof Error ? err.message : 'An error occurred while trying to sign in.'
       );
     } finally {
       setIsSubmitting(false);
@@ -97,7 +97,7 @@ export default function App() {
       setErrorMessage(null);
     } catch (err: unknown) {
       setErrorMessage(
-        err instanceof Error ? err.message : 'Gagal keluar dari ekstensi.'
+        err instanceof Error ? err.message : 'Failed to sign out from extension.'
       );
     } finally {
       setIsSubmitting(false);
@@ -113,10 +113,10 @@ export default function App() {
       {authState === 'unconfigured' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <div className="error-banner" role="alert">
-            <strong>Konfigurasi Belum Lengkap</strong>
+            <strong>Configuration Incomplete</strong>
             <p style={{ marginTop: '4px', fontSize: '11px', lineHeight: '1.4' }}>
-              Ekstensi belum memiliki Supabase URL atau Anon Key. Tambahkan variabel pada{' '}
-              <code>apps/extension/.env.local</code> dan jalankan kembali build ekstensi.
+              Extension is missing Supabase URL or Anon Key. Add the variables to{' '}
+              <code>apps/extension/.env.local</code> and rebuild the extension.
             </p>
           </div>
           <button
@@ -124,7 +124,7 @@ export default function App() {
             className="btn-secondary"
             onClick={loadSession}
           >
-            Muat Ulang
+            Reload
           </button>
         </div>
       )}
@@ -142,9 +142,9 @@ export default function App() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {authState === 'expired' && (
             <div className="notice-card" style={{ borderColor: 'rgba(255, 92, 53, 0.3)' }}>
-              <p style={{ color: '#FF5C35', fontWeight: 600 }}>Sesi Berakhir</p>
+              <p style={{ color: '#FF5C35', fontWeight: 600 }}>Session Expired</p>
               <p style={{ fontSize: '11px', marginTop: '2px' }}>
-                Sesi Anda telah kedaluwarsa. Silakan masukkan kredensial akun Anda kembali.
+                Your session has expired. Please enter your account credentials again.
               </p>
             </div>
           )}
@@ -160,9 +160,9 @@ export default function App() {
       {authState === 'offline' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <ErrorNotice
-            message="Koneksi terputus. Tidak dapat menghubungi server autentikasi Vrate."
+            message="Connection lost. Unable to reach Vrate authentication server."
             onRetry={loadSession}
-            retryLabel="Coba Lagi"
+            retryLabel="Try Again"
           />
         </div>
       )}
@@ -170,9 +170,9 @@ export default function App() {
       {authState === 'error' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <ErrorNotice
-            message={errorMessage || 'Terjadi gangguan internal pada ekstensi.'}
+            message={errorMessage || 'An internal error occurred in the extension.'}
             onRetry={loadSession}
-            retryLabel="Coba Lagi"
+            retryLabel="Try Again"
           />
         </div>
       )}

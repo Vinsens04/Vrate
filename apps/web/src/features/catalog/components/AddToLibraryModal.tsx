@@ -42,7 +42,7 @@ export function AddToLibraryModal({
       }
       onClose();
     } else {
-      setErrorMessage(res.error || res.message || 'Gagal menambahkan ke library.');
+      setErrorMessage(res.error || res.message || 'Failed to add to library.');
     }
   }
 
@@ -60,7 +60,7 @@ export function AddToLibraryModal({
         <div className="flex items-start justify-between border-b border-app-border pb-4">
           <div>
             <span className="text-[11px] font-semibold uppercase tracking-wider text-brand-primary">
-              Tambah ke Library
+              Add to Library
             </span>
             <h3 id="modal-title" className="mt-1 text-base font-semibold text-app-text line-clamp-1">
               {media.title}
@@ -74,7 +74,7 @@ export function AddToLibraryModal({
             onClick={onClose}
             disabled={isPending}
             className="text-app-dim hover:text-app-text p-1"
-            aria-label="Tutup dialog"
+            aria-label="Close dialog"
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -90,7 +90,7 @@ export function AddToLibraryModal({
 
         <div className="mt-5 space-y-4">
           <label className="block text-xs font-medium text-app-muted">
-            Pilih status awal untuk media ini:
+            Select initial status for this title:
           </label>
 
           <div className="grid grid-cols-1 gap-2.5">
@@ -105,7 +105,7 @@ export function AddToLibraryModal({
             >
               <div>
                 <div className="text-sm font-medium">Watchlist</div>
-                <div className="text-xs text-app-dim">Ingin ditonton di kemudian hari</div>
+                <div className="text-xs text-app-dim">Plan to watch later</div>
               </div>
               <div
                 className={`h-4 w-4 rounded-full border flex items-center justify-center ${
@@ -126,8 +126,8 @@ export function AddToLibraryModal({
               }`}
             >
               <div>
-                <div className="text-sm font-medium">Sedang Ditonton</div>
-                <div className="text-xs text-app-dim">Mulai aktif menonton sekarang</div>
+                <div className="text-sm font-medium">Watching</div>
+                <div className="text-xs text-app-dim">Currently watching</div>
               </div>
               <div
                 className={`h-4 w-4 rounded-full border flex items-center justify-center ${
@@ -148,8 +148,8 @@ export function AddToLibraryModal({
               }`}
             >
               <div>
-                <div className="text-sm font-medium">Selesai</div>
-                <div className="text-xs text-app-dim">Sudah selesai ditonton</div>
+                <div className="text-sm font-medium">Completed</div>
+                <div className="text-xs text-app-dim">Finished watching</div>
               </div>
               <div
                 className={`h-4 w-4 rounded-full border flex items-center justify-center ${
@@ -169,7 +169,7 @@ export function AddToLibraryModal({
             disabled={isPending}
             className="vr-secondary min-h-[40px] px-4 py-2 text-xs"
           >
-            Batal
+            Cancel
           </button>
           <button
             type="button"
@@ -177,7 +177,7 @@ export function AddToLibraryModal({
             disabled={isPending}
             className="vr-primary min-h-[40px] px-5 py-2 text-xs"
           >
-            {isPending ? 'Menambahkan...' : 'Simpan ke Library'}
+            {isPending ? 'Adding...' : 'Save to Library'}
           </button>
         </div>
       </div>

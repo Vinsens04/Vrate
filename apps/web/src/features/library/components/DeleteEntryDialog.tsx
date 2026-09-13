@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useTransition, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -32,7 +32,7 @@ export function DeleteEntryDialog({ entryId, mediaTitle }: DeleteEntryDialogProp
     startTransition(async () => {
       const res = await deleteEntryAction(entryId);
       if (!res.success) {
-        setErrorMessage(res.error || 'Gagal menghapus media.');
+        setErrorMessage(res.error || 'Failed to remove media.');
       } else {
         setIsOpen(false);
         router.push('/dashboard/library');
@@ -48,7 +48,7 @@ export function DeleteEntryDialog({ entryId, mediaTitle }: DeleteEntryDialogProp
         onClick={() => setIsOpen(true)}
         className="inline-flex min-h-[40px] items-center justify-center rounded-btn border border-brand-danger/40 px-4 py-2 text-xs font-semibold text-brand-danger transition hover:bg-brand-danger/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-danger"
       >
-        Hapus dari library
+        Remove from library
       </button>
 
       {isOpen && (
@@ -61,14 +61,14 @@ export function DeleteEntryDialog({ entryId, mediaTitle }: DeleteEntryDialogProp
         >
           <div className="w-full max-w-md border border-app-border bg-app-bg p-6 shadow-2xl" onClick={e => e.stopPropagation()}>
             <h3 id="delete-dialog-title" className="text-xl font-semibold text-app-text">
-              Hapus dari library?
+              Remove from library?
             </h3>
             <div id="delete-dialog-description" className="mt-4 space-y-3 text-sm leading-7 text-app-muted">
               <p>
-                Media <span className="font-semibold text-app-text">&quot;{mediaTitle}&quot;</span> akan dihapus dari koleksimu.
+                Media <span className="font-semibold text-app-text">&quot;{mediaTitle}&quot;</span> will be removed from your collection.
               </p>
               <p className="border-l-2 border-brand-warning pl-3 text-xs leading-6 text-brand-warning">
-                Progres episode, rating, catatan pribadi, dan riwayat sesi terkait juga ikut dihapus.
+                Episode progress, personal rating, notes, and related watch history will also be permanently deleted.
               </p>
             </div>
 
@@ -80,7 +80,7 @@ export function DeleteEntryDialog({ entryId, mediaTitle }: DeleteEntryDialogProp
 
             <div className="mt-7 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
               <button type="button" onClick={() => setIsOpen(false)} disabled={isPending} className="vr-secondary min-h-[40px] px-4 py-2 text-xs">
-                Batal
+                Cancel
               </button>
               <button
                 type="button"
@@ -88,7 +88,7 @@ export function DeleteEntryDialog({ entryId, mediaTitle }: DeleteEntryDialogProp
                 disabled={isPending}
                 className="inline-flex min-h-[40px] items-center justify-center rounded-btn bg-brand-danger px-4 py-2 text-xs font-semibold text-white transition hover:bg-brand-danger/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-danger disabled:opacity-50"
               >
-                {isPending ? 'Menghapus' : 'Hapus media'}
+                {isPending ? 'Removing...' : 'Remove media'}
               </button>
             </div>
           </div>

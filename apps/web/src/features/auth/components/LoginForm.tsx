@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useActionState, useState } from 'react';
 import Link from 'next/link';
@@ -35,7 +35,7 @@ export function LoginForm({ redirectTo = '/dashboard', googleAuthEnabled = false
             type="email"
             autoComplete="email"
             required
-            placeholder="nama@email.com"
+            placeholder="name@email.com"
             disabled={isPending}
             className="vr-control mt-2 w-full"
           />
@@ -44,10 +44,10 @@ export function LoginForm({ redirectTo = '/dashboard', googleAuthEnabled = false
         <div>
           <div className="flex items-center justify-between gap-4">
             <label htmlFor="password" className="vr-label">
-              Kata sandi
+              Password
             </label>
             <Link href="/forgot-password" className="text-xs font-medium text-app-muted transition hover:text-brand-primary">
-              Lupa kata sandi?
+              Forgot password?
             </Link>
           </div>
           <div className="relative mt-2">
@@ -65,7 +65,7 @@ export function LoginForm({ redirectTo = '/dashboard', googleAuthEnabled = false
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute inset-y-0 right-0 flex min-w-11 items-center justify-center text-app-dim transition hover:text-app-text"
-              aria-label={showPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
               {showPassword ? 'Hide' : 'Show'}
             </button>
@@ -73,16 +73,16 @@ export function LoginForm({ redirectTo = '/dashboard', googleAuthEnabled = false
         </div>
 
         <button type="submit" disabled={isPending} className="vr-primary w-full">
-          {isPending ? 'Memproses' : 'Masuk'}
+          {isPending ? 'Signing in...' : 'Sign In'}
         </button>
       </form>
 
       {googleAuthEnabled && <GoogleAuthButton redirectTo={redirectTo} />}
 
       <p className="text-center text-sm text-app-muted">
-        Belum punya akun?{' '}
+        Don&apos;t have an account?{' '}
         <Link href="/register" className="vr-link">
-          Daftar
+          Sign up
         </Link>
       </p>
     </div>

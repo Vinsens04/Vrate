@@ -1,10 +1,10 @@
 /**
- * Maps raw Supabase or network error objects to safe, user-friendly Indonesian messages.
+ * Maps raw Supabase or network error objects to safe, user-friendly English messages.
  * Never leaks raw secrets, credentials, or internal server dumps.
  */
 export function mapExtensionAuthError(error: unknown): string {
   if (!error) {
-    return 'Terjadi kesalahan tidak dikenal.';
+    return 'An unknown error occurred.';
   }
 
   const message = error instanceof Error ? error.message : String(error);
@@ -15,11 +15,11 @@ export function mapExtensionAuthError(error: unknown): string {
     lower.includes('invalid_grant') ||
     lower.includes('invalid email or password')
   ) {
-    return 'Email atau kata sandi tidak valid.';
+    return 'Invalid email or password.';
   }
 
   if (lower.includes('email not confirmed')) {
-    return 'Email belum diverifikasi. Silakan periksa kotak masuk email Anda untuk melakukan konfirmasi.';
+    return 'Email not verified. Please check your inbox to confirm your email.';
   }
 
   if (
@@ -29,7 +29,7 @@ export function mapExtensionAuthError(error: unknown): string {
     lower.includes('invalid refresh token') ||
     lower.includes('refresh_token_not_found')
   ) {
-    return 'Sesi Anda telah berakhir. Silakan masuk kembali.';
+    return 'Your session has expired. Please sign in again.';
   }
 
   if (
@@ -38,12 +38,12 @@ export function mapExtensionAuthError(error: unknown): string {
     lower.includes('networkrequestfailed') ||
     lower.includes('timeout')
   ) {
-    return 'Tidak dapat terhubung ke server. Periksa koneksi internet Anda.';
+    return 'Unable to connect to the server. Please check your internet connection.';
   }
 
   if (lower.includes('rate limit') || lower.includes('too many requests')) {
-    return 'Terlalu banyak percobaan masuk. Silakan tunggu beberapa saat sebelum mencoba lagi.';
+    return 'Too many sign-in attempts. Please wait a moment before trying again.';
   }
 
-  return 'Gagal melakukan autentikasi. Silakan periksa kembali data Anda.';
+  return 'Authentication failed. Please check your credentials.';
 }

@@ -40,16 +40,16 @@ export function CatalogGrid({
           </svg>
         </div>
         <h3 className="font-editorial text-xl font-medium text-app-text">
-          Temukan Film, Serial, dan Anime
+          Discover Movies, Series, and Anime
         </h3>
         <p className="mt-2 max-w-md text-sm text-app-muted">
-          Cari jutaan judul melalui integrasi TMDB dan AniList. Tambahkan ke watchlist atau tandai yang sedang kamu tonton.
+          Search millions of titles via TMDB and AniList. Add to watchlist or track what you are currently watching.
         </p>
 
         {/* Suggestion Chips */}
         {onSearchSuggestion && (
           <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
-            <span className="text-xs text-app-dim">Coba cari:</span>
+            <span className="text-xs text-app-dim">Try searching:</span>
             {suggestions.map((item) => (
               <button
                 key={item}
@@ -70,7 +70,7 @@ export function CatalogGrid({
   if (query.length > 0 && query.length < 2 && !isLoading) {
     return (
       <div className="rounded-card border border-app-border bg-app-surface/40 p-10 text-center text-app-dim">
-        Ketik minimal 2 karakter untuk memulai pencarian.
+        Type at least 2 characters to start searching.
       </div>
     );
   }
@@ -112,7 +112,7 @@ export function CatalogGrid({
             onClick={onRetry}
             className="vr-secondary mt-4 min-h-[36px] px-4 py-1.5 text-xs text-brand-danger border-brand-danger/40 hover:bg-brand-danger/20"
           >
-            Coba Lagi
+            Try Again
           </button>
         )}
       </div>
@@ -155,20 +155,20 @@ export function CatalogGrid({
       {/* Results or Empty Results */}
       {results.length === 0 ? (
         <div className="rounded-card border border-app-border bg-app-surface/50 py-16 px-4 text-center">
-          <h4 className="text-base font-medium text-app-text">Tidak ada hasil ditemukan</h4>
+          <h4 className="text-base font-medium text-app-text">No results found</h4>
           <p className="mt-1 text-xs text-app-dim">
-            Tidak ditemukan film, serial, atau anime dengan kata kunci &ldquo;{query}&rdquo;.
+            No movies, series, or anime found matching &ldquo;{query}&rdquo;.
           </p>
           <p className="mt-3 text-xs text-app-muted">
-            Coba periksa ejaan judul atau gunakan kata kunci yang lebih umum.
+            Check your spelling or try searching for a different keyword.
           </p>
         </div>
       ) : (
         <>
           <div className="flex items-center justify-between text-xs text-app-dim">
             <span>
-              Ditemukan <span className="font-semibold text-app-text">{results.length}</span> hasil
-              {page > 1 && ` (Halaman ${page})`}
+              Found <span className="font-semibold text-app-text">{results.length}</span> results
+              {page > 1 && ` (Page ${page})`}
             </span>
           </div>
 
@@ -189,11 +189,11 @@ export function CatalogGrid({
                 onClick={() => onPageChange(page - 1)}
                 className="vr-secondary min-h-[38px] px-4 py-2 text-xs"
               >
-                ← Sebelumnya
+                ← Previous
               </button>
             )}
             <span className="text-xs text-app-dim">
-              Halaman {page}
+              Page {page}
             </span>
             {hasNextPage && onPageChange && (
               <button
@@ -201,7 +201,7 @@ export function CatalogGrid({
                 onClick={() => onPageChange(page + 1)}
                 className="vr-primary min-h-[38px] px-5 py-2 text-xs"
               >
-                Selanjutnya →
+                Next →
               </button>
             )}
           </div>

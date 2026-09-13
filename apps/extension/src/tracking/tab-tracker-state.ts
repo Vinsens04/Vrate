@@ -542,7 +542,7 @@ export async function handleCheckpointFromTab(
 
       if (!session.libraryEntryId) {
         session.status = 'error';
-        session.error = 'Gagal menambahkan tontonan ke library secara otomatis.';
+        session.error = 'Failed to automatically add media to library.';
         return;
       }
 
@@ -776,7 +776,7 @@ export async function markTabEpisodeCompleted(
   } catch (err: unknown) {
     return {
       success: false,
-      error: err instanceof Error ? err.message : 'Gagal menandai selesai.',
+      error: err instanceof Error ? err.message : 'Failed to mark as completed.',
     };
   }
 }
@@ -794,12 +794,12 @@ export async function deleteTabEpisodeProgress(
   const seasonNumber = params?.seasonNumber ?? session?.seasonNumber ?? null;
 
   if (!libraryEntryId) {
-    return { success: false, error: 'Media belum tersimpan di library.' };
+    return { success: false, error: 'Media is not in library yet.' };
   }
 
   const token = await getAccessToken();
   if (!token) {
-    return { success: false, error: 'Sesi ekstensi belum terautentikasi.' };
+    return { success: false, error: 'Extension session is not authenticated.' };
   }
 
   try {
@@ -828,7 +828,7 @@ export async function deleteTabEpisodeProgress(
   } catch (err: unknown) {
     return {
       success: false,
-      error: err instanceof Error ? err.message : 'Gagal menghapus progres.',
+      error: err instanceof Error ? err.message : 'Failed to delete progress.',
     };
   }
 }
@@ -851,12 +851,12 @@ export async function correctTabEpisode(
   const seasonNumber = params.seasonNumber ?? session?.seasonNumber ?? null;
 
   if (!libraryEntryId) {
-    return { success: false, error: 'Media belum tersimpan di library.' };
+    return { success: false, error: 'Media is not in library yet.' };
   }
 
   const token = await getAccessToken();
   if (!token) {
-    return { success: false, error: 'Sesi ekstensi belum terautentikasi.' };
+    return { success: false, error: 'Extension session is not authenticated.' };
   }
 
   try {
@@ -887,7 +887,7 @@ export async function correctTabEpisode(
   } catch (err: unknown) {
     return {
       success: false,
-      error: err instanceof Error ? err.message : 'Gagal memperbaiki episode.',
+      error: err instanceof Error ? err.message : 'Failed to correct episode.',
     };
   }
 }

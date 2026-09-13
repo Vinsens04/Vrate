@@ -46,9 +46,8 @@ export function CatalogSearchInput({
 
   return (
     <form onSubmit={handleSubmit} className="relative w-full">
-      <div className="relative flex items-center">
-        {/* Search Icon or Loading Spinner */}
-        <div className="pointer-events-none absolute left-4 text-app-dim">
+      <div className="group relative flex items-center">
+        <div className="pointer-events-none absolute inset-y-0 left-4 flex items-center text-app-dim transition-colors group-focus-within:text-app-muted">
           {isLoading ? (
             <svg
               className="h-5 w-5 animate-spin text-brand-primary"
@@ -91,19 +90,19 @@ export function CatalogSearchInput({
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Cari film, serial TV, atau anime (min. 2 karakter)..."
+          placeholder="Search titles..."
           maxLength={100}
-          className="vr-control w-full pl-11 pr-10 text-base shadow-sm focus:border-brand-primary"
-          aria-label="Cari katalog media"
+          className="h-10 w-full rounded-[12px] border border-[#252B36] bg-[#0D1117] py-2 pl-10 pr-10 text-sm text-app-text shadow-sm transition-all duration-200 placeholder:text-[#737C8B] focus:border-brand-primary/70 focus:bg-[#10141C] focus:outline-none focus:ring-2 focus:ring-brand-primary/15 disabled:cursor-not-allowed disabled:opacity-55"
+          aria-label="Search media catalog"
         />
 
-        {/* Clear Button */}
+
         {query.length > 0 && (
           <button
             type="button"
             onClick={handleClear}
-            className="absolute right-3 p-1 text-app-dim hover:text-app-text focus:outline-none"
-            aria-label="Hapus kata kunci pencarian"
+            className="absolute inset-y-0 right-2 flex h-full items-center justify-center rounded-md px-2 text-app-dim transition-colors hover:text-app-text focus:outline-none"
+            aria-label="Clear search keyword"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -114,7 +113,7 @@ export function CatalogSearchInput({
 
       {query.length === 1 && (
         <p className="mt-1.5 text-xs text-app-dim">
-          Ketik minimal 2 karakter untuk memulai pencarian.
+          Type at least 2 characters to start searching.
         </p>
       )}
     </form>

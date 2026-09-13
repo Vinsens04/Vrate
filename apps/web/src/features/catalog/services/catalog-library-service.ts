@@ -49,7 +49,7 @@ export async function ensureCanonicalMedia(
     } else if (provider === 'anilist') {
       media = await getAniListDetail(externalId);
     } else {
-      return { success: false, error: 'Provider tidak didukung.' };
+      return { success: false, error: 'Provider not supported.' };
     }
 
     // 3. Insert canonical media record
@@ -79,7 +79,7 @@ export async function ensureCanonicalMedia(
       .single();
 
     if (mediaErr || !insertedMedia) {
-      return { success: false, error: 'Gagal menyimpan katalog media.' };
+      return { success: false, error: 'Failed to save media catalog.' };
     }
 
     // 4. Insert external ID mapping with conflict handling
@@ -107,12 +107,12 @@ export async function ensureCanonicalMedia(
           return { success: true, mediaId: conflictMapping.media_id };
         }
       }
-      return { success: false, error: 'Gagal memetakan identitas eksternal media.' };
+      return { success: false, error: 'Failed to map media external identity.' };
     }
 
     return { success: true, mediaId: insertedMedia.id };
   } catch (err: unknown) {
-    const errorMsg = err instanceof Error ? err.message : 'Kesalahan upstream provider.';
+    const errorMsg = err instanceof Error ? err.message : 'Upstream provider error.';
     return { success: false, error: errorMsg };
   }
 }
@@ -150,7 +150,7 @@ export async function addMediaToUserLibrary(
         alreadyExists: true,
         entryId: existingEntry.id,
         mediaId,
-        message: 'Media ini sudah ada di library kamu.',
+        message: 'This media is already in your library.',
       };
     }
 
@@ -175,13 +175,13 @@ export async function addMediaToUserLibrary(
           success: true,
           alreadyExists: true,
           mediaId,
-          message: 'Media ini sudah ada di library kamu.',
+          message: 'This media is already in your library.',
         };
       }
       return {
         success: false,
         error: insertErr.message,
-        message: 'Gagal menambahkan media ke library.',
+        message: 'Failed to add media to library.',
       };
     }
 
@@ -189,14 +189,14 @@ export async function addMediaToUserLibrary(
       success: true,
       entryId: newEntry.id,
       mediaId,
-      message: 'Berhasil menambahkan media ke library.',
+      message: 'Media successfully added to your library.',
     };
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Terjadi kesalahan sistem.';
+    const message = err instanceof Error ? err.message : 'A system error occurred.';
     return {
       success: false,
       error: message,
-      message: 'Gagal menambahkan media ke library.',
+      message: 'Failed to add media to library.',
     };
   }
 }

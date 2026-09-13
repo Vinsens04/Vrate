@@ -38,7 +38,7 @@ export async function handleTrackingMessage(
   if (type === 'TRACKING_CHECKPOINT') {
     const tabId = sender.tab?.id;
     if (!tabId) {
-      return { success: false, error: 'Tidak dapat menentukan tabId pengirim.' };
+      return { success: false, error: 'Unable to determine sender tabId.' };
     }
 
     await handleCheckpointFromTab(tabId, {
@@ -77,7 +77,7 @@ export async function handleTrackingMessage(
   if (type === 'TRACKING_STATUS_UPDATE') {
     const tabId = sender.tab?.id;
     if (!tabId) {
-      return { success: false, error: 'Tidak dapat menentukan tabId pengirim.' };
+      return { success: false, error: 'Unable to determine sender tabId.' };
     }
 
     updateTabTrackingStatus(
@@ -99,7 +99,7 @@ export async function handleTrackingMessage(
     }
 
     if (!tabId) {
-      return { success: false, session: null, error: 'Tab tidak ditemukan.' };
+      return { success: false, session: null, error: 'Tab not found.' };
     }
 
     const session = getTabTrackingSession(tabId);
@@ -115,7 +115,7 @@ export async function handleTrackingMessage(
     }
 
     if (!tabId) {
-      return { success: false, error: 'Tab aktif tidak ditemukan.' };
+      return { success: false, error: 'Active tab not found.' };
     }
 
     const result = await startTrackingSession(tabId, {
@@ -215,7 +215,7 @@ export async function handleTrackingMessage(
 
     const correctedEpisodeNumber = Number(payload.correctedEpisodeNumber);
     if (!correctedEpisodeNumber || isNaN(correctedEpisodeNumber) || correctedEpisodeNumber <= 0) {
-      return { success: false, error: 'Nomor episode perbaikan tidak valid.' };
+      return { success: false, error: 'Invalid corrected episode number.' };
     }
 
     const result = await correctTabEpisode(tabId, {
@@ -235,5 +235,5 @@ export async function handleTrackingMessage(
     return { success: result.success, session, error: result.error };
   }
 
-  return { success: false, error: `Tipe pesan tracking tidak dikenali: ${type}` };
+  return { success: false, error: `Unrecognized tracking message type: ${type}` };
 }

@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useActionState } from 'react';
 import Link from 'next/link';
@@ -11,11 +11,11 @@ export function ForgotPasswordForm() {
     return (
       <div className="space-y-5 border border-app-border bg-app-surface p-5 text-center">
         <div>
-          <h3 className="text-lg font-semibold text-app-text">Tautan terkirim</h3>
+          <h3 className="text-lg font-semibold text-app-text">Link sent</h3>
           <p className="mt-2 text-sm leading-7 text-app-muted">{state.message}</p>
         </div>
         <Link href="/login" className="vr-primary w-full">
-          Kembali masuk
+          Back to sign in
         </Link>
       </div>
     );
@@ -32,7 +32,7 @@ export function ForgotPasswordForm() {
       <form action={formAction} className="space-y-4">
         <div>
           <label htmlFor="email" className="vr-label">
-            Email terdaftar
+            Registered email
           </label>
           <input
             id="email"
@@ -40,21 +40,21 @@ export function ForgotPasswordForm() {
             type="email"
             autoComplete="email"
             required
-            placeholder="nama@email.com"
+            placeholder="name@email.com"
             disabled={isPending}
             className="vr-control mt-2 w-full"
           />
         </div>
 
         <button type="submit" disabled={isPending} className="vr-primary w-full">
-          {isPending ? 'Mengirim' : 'Kirim tautan pemulihan'}
+          {isPending ? 'Sending...' : 'Send reset link'}
         </button>
       </form>
 
       <p className="text-center text-sm text-app-muted">
-        Ingat kata sandi?{' '}
+        Remember your password?{' '}
         <Link href="/login" className="vr-link">
-          Kembali masuk
+          Back to sign in
         </Link>
       </p>
     </div>

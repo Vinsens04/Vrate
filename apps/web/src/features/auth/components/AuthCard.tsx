@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { Logo } from '@/components/brand/Logo';
 
@@ -19,10 +19,10 @@ export function AuthCard({ title, subtitle, children, footer }: AuthCardProps) {
             <div className="mt-20 max-w-lg">
               <p className="vr-label">Private viewing journal</p>
               <h2 className="mt-4 text-balance text-5xl font-semibold leading-tight text-app-text">
-                Masuk ke arsip tontonanmu.
+                Enter your viewing archive.
               </h2>
               <p className="mt-5 text-sm leading-7 text-app-muted">
-                Vrate menyimpan progres, rating, dan catatan pribadi tanpa membuat halaman auth terasa seperti panel admin.
+                Vrate stores your progress, ratings, and personal notes without making auth feel like an admin panel.
               </p>
             </div>
           </div>
@@ -42,7 +42,7 @@ export function AuthCard({ title, subtitle, children, footer }: AuthCardProps) {
           <div className="mb-10 flex items-center justify-between lg:hidden">
             <Logo size="sm" />
             <Link href="/" className="text-sm text-app-muted transition hover:text-app-text">
-              Beranda
+              Home
             </Link>
           </div>
 

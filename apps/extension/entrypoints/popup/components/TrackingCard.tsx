@@ -85,7 +85,7 @@ export function TrackingCard({
         setErrorMsg(res.error);
       }
     } catch (err: unknown) {
-      setErrorMsg(err instanceof Error ? err.message : 'Gagal memulai tracking.');
+      setErrorMsg(err instanceof Error ? err.message : 'Failed to start tracking.');
     } finally {
       setLoading(false);
     }
@@ -99,7 +99,7 @@ export function TrackingCard({
       await stopActiveTabTracking();
       setSession(null);
       onSessionChange?.(null);
-      setSuccessMsg('Pelacakan sesi ini dihentikan.');
+      setSuccessMsg('Tracking session stopped.');
     } finally {
       setLoading(false);
     }
@@ -111,7 +111,7 @@ export function TrackingCard({
     const targetSeason = session?.seasonNumber ?? seasonNumber ?? null;
 
     if (!targetEntryId) {
-      setErrorMsg('Media belum tersimpan di library.');
+      setErrorMsg('Media is not in library yet.');
       return;
     }
 
@@ -127,15 +127,15 @@ export function TrackingCard({
       });
 
       if (res.success) {
-        setSuccessMsg(`Episode ${targetEp} ditandai selesai!`);
+        setSuccessMsg(`Episode ${targetEp} marked as completed!`);
         if (session) {
           setSession({ ...session, isCompleted: true });
         }
       } else {
-        setErrorMsg(res.error || 'Gagal menandai episode selesai.');
+        setErrorMsg(res.error || 'Failed to mark episode as completed.');
       }
     } catch (err: unknown) {
-      setErrorMsg(err instanceof Error ? err.message : 'Gagal menandai episode selesai.');
+      setErrorMsg(err instanceof Error ? err.message : 'Failed to mark episode as completed.');
     } finally {
       setLoading(false);
     }
@@ -147,7 +147,7 @@ export function TrackingCard({
     const targetSeason = session?.seasonNumber ?? seasonNumber ?? null;
 
     if (!targetEntryId) {
-      setErrorMsg('Media belum tersimpan di library.');
+      setErrorMsg('Media is not in library yet.');
       return;
     }
 
@@ -163,7 +163,7 @@ export function TrackingCard({
       });
 
       if (res.success) {
-        setSuccessMsg(`Progres Episode ${targetEp} berhasil dihapus.`);
+        setSuccessMsg(`Episode ${targetEp} progress deleted successfully.`);
         if (session) {
           setSession({
             ...session,
@@ -174,10 +174,10 @@ export function TrackingCard({
           });
         }
       } else {
-        setErrorMsg(res.error || 'Gagal menghapus progres.');
+        setErrorMsg(res.error || 'Failed to delete progress.');
       }
     } catch (err: unknown) {
-      setErrorMsg(err instanceof Error ? err.message : 'Gagal menghapus progres.');
+      setErrorMsg(err instanceof Error ? err.message : 'Failed to delete progress.');
     } finally {
       setLoading(false);
     }
@@ -190,12 +190,12 @@ export function TrackingCard({
     const newEpNum = parseInt(correctedEpInput, 10);
 
     if (!newEpNum || isNaN(newEpNum) || newEpNum <= 0) {
-      setErrorMsg('Nomor episode baru harus angka positif.');
+      setErrorMsg('New episode number must be a positive number.');
       return;
     }
 
     if (!targetEntryId) {
-      setErrorMsg('Media belum tersimpan di library.');
+      setErrorMsg('Media is not in library yet.');
       return;
     }
 
@@ -212,17 +212,17 @@ export function TrackingCard({
       });
 
       if (res.success) {
-        setSuccessMsg(`Nomor episode diperbarui ke ${newEpNum}.`);
+        setSuccessMsg(`Episode number updated to ${newEpNum}.`);
         setShowCorrectModal(false);
         setCorrectedEpInput('');
         if (session) {
           setSession({ ...session, episodeNumber: newEpNum });
         }
       } else {
-        setErrorMsg(res.error || 'Gagal memperbaiki episode.');
+        setErrorMsg(res.error || 'Failed to correct episode.');
       }
     } catch (err: unknown) {
-      setErrorMsg(err instanceof Error ? err.message : 'Gagal memperbaiki episode.');
+      setErrorMsg(err instanceof Error ? err.message : 'Failed to correct episode.');
     } finally {
       setLoading(false);
     }
@@ -300,7 +300,7 @@ export function TrackingCard({
               className="meta-tag"
               style={{ backgroundColor: 'rgba(93, 187, 138, 0.15)', color: '#5DBB8A' }}
             >
-              ✓ Selesai
+              ✓ Completed
             </span>
           )}
         </div>
@@ -319,7 +319,7 @@ export function TrackingCard({
               marginBottom: '8px',
             }}
           >
-            Konfirmasi Otomatis: {accumulatedWatched}/{AUTO_TRACK_CONFIRMATION_SECONDS} detik playback nyata
+            Auto Confirmation: {accumulatedWatched}/{AUTO_TRACK_CONFIRMATION_SECONDS}s actual playback
           </div>
         )}
 
@@ -337,8 +337,8 @@ export function TrackingCard({
               marginBottom: '8px',
             }}
           >
-            Player tontonan berada di dalam iframe domain lain ({session.iframeDomain || 'embed'}).
-            Progres tidak dapat dibaca langsung demi keamanan peramban.
+            Video player is inside an iframe from another domain ({session.iframeDomain || 'embed'}).
+            Progress cannot be read directly due to browser security policies.
           </div>
         )}
 
@@ -381,7 +381,7 @@ export function TrackingCard({
           </div>
         ) : (
           <div style={{ fontSize: '11px', color: '#888888', marginBottom: '8px' }}>
-            Posisi: {formatSecondsToTime(progress)}
+            Position: {formatSecondsToTime(progress)}
           </div>
         )}
 
@@ -421,7 +421,7 @@ export function TrackingCard({
               marginBottom: '8px',
             }}
           >
-            <span style={{ fontSize: '11px', color: '#A3A3A3' }}>Nomor episode yang benar:</span>
+            <span style={{ fontSize: '11px', color: '#A3A3A3' }}>Correct episode number:</span>
             <div style={{ display: 'flex', gap: '6px' }}>
               <input
                 type="number"
@@ -446,7 +446,7 @@ export function TrackingCard({
                 onClick={handleCorrectEpisode}
                 disabled={loading}
               >
-                Simpan
+                Save
               </button>
               <button
                 type="button"
@@ -454,7 +454,7 @@ export function TrackingCard({
                 style={{ fontSize: '11px', padding: '4px 8px' }}
                 onClick={() => setShowCorrectModal(false)}
               >
-                Batal
+                Cancel
               </button>
             </div>
           </div>
@@ -469,7 +469,7 @@ export function TrackingCard({
             disabled={loading || session.isCompleted}
             style={{ fontSize: '10px', padding: '6px' }}
           >
-            ✓ Tandai Selesai
+            ✓ Mark Completed
           </button>
 
           <button
@@ -479,7 +479,7 @@ export function TrackingCard({
             disabled={loading}
             style={{ fontSize: '10px', padding: '6px' }}
           >
-            ✎ Perbaiki Ep
+            ✎ Edit Ep
           </button>
 
           <button
@@ -489,7 +489,7 @@ export function TrackingCard({
             disabled={loading}
             style={{ fontSize: '10px', padding: '6px', color: '#FF8888' }}
           >
-            🗑 Hapus Progres
+            🗑 Clear Progress
           </button>
 
           <button
@@ -499,7 +499,7 @@ export function TrackingCard({
             disabled={loading}
             style={{ fontSize: '10px', padding: '6px' }}
           >
-            ⏹ Hentikan Sesi
+            ⏹ Stop Session
           </button>
         </div>
       </div>
@@ -521,7 +521,7 @@ export function TrackingCard({
         onClick={handleStartTracking}
         disabled={loading}
       >
-        {loading ? 'Menyiapkan...' : '▶ Lacak Progres Video'}
+        {loading ? 'Preparing...' : '▶ Track Video Progress'}
       </button>
     </div>
   );

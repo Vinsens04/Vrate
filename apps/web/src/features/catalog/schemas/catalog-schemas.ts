@@ -9,16 +9,16 @@ export const catalogSearchParamSchema = z.object({
   q: z
     .string()
     .trim()
-    .min(2, 'Kata kunci pencarian minimal 2 karakter')
-    .max(100, 'Kata kunci pencarian maksimal 100 karakter'),
+    .min(2, 'Search keyword must be at least 2 characters')
+    .max(100, 'Search keyword cannot exceed 100 characters'),
   source: z.enum(CATALOG_SOURCES).default('all'),
   type: z.enum(CATALOG_FILTER_TYPES).default('all'),
   page: z
     .coerce
     .number()
-    .int('Halaman harus berupa bilangan bulat')
-    .min(1, 'Halaman minimal 1')
-    .max(50, 'Halaman maksimal 50')
+    .int('Page must be an integer')
+    .min(1, 'Page must be at least 1')
+    .max(50, 'Page cannot exceed 50')
     .default(1),
 });
 
@@ -28,16 +28,16 @@ export type CatalogSearchParamOutput = z.output<typeof catalogSearchParamSchema>
 export const addToLibrarySchema = z
   .object({
     provider: z.enum(METADATA_PROVIDERS, {
-      message: 'Provider metadata tidak valid (tmdb atau anilist)',
+      message: 'Invalid metadata provider (tmdb or anilist)',
     }),
     externalId: z
       .string()
       .trim()
-      .regex(/^[0-9]+$/, 'External ID provider harus berupa angka valid'),
+      .regex(/^[0-9]+$/, 'Provider external ID must be a valid number'),
     providerMediaType: z.enum(['movie', 'tv']).optional(),
     initialStatus: z
       .enum(INITIAL_LIBRARY_STATUSES, {
-        message: 'Status awal harus watchlist, watching, atau completed',
+        message: 'Initial status must be watchlist, watching, or completed',
       })
       .default('watchlist'),
   })
@@ -49,7 +49,7 @@ export const addToLibrarySchema = z
       return true;
     },
     {
-      message: 'Provider TMDB memerlukan providerMediaType (movie atau tv)',
+      message: 'TMDB provider requires providerMediaType (movie or tv)',
       path: ['providerMediaType'],
     }
   );
@@ -60,12 +60,12 @@ export type AddToLibrarySchemaOutput = z.output<typeof addToLibrarySchema>;
 export const catalogDetailParamSchema = z
   .object({
     provider: z.enum(METADATA_PROVIDERS, {
-      message: 'Provider metadata tidak valid (tmdb atau anilist)',
+      message: 'Invalid metadata provider (tmdb or anilist)',
     }),
     externalId: z
       .string()
       .trim()
-      .regex(/^[0-9]+$/, 'External ID provider harus berupa angka valid'),
+      .regex(/^[0-9]+$/, 'Provider external ID must be a valid number'),
     type: z.enum(['movie', 'tv']).optional(),
   })
   .refine(
@@ -76,7 +76,7 @@ export const catalogDetailParamSchema = z
       return true;
     },
     {
-      message: 'Provider TMDB memerlukan parameter jenis (movie atau tv)',
+      message: 'TMDB provider requires type parameter (movie or tv)',
       path: ['type'],
     }
   );

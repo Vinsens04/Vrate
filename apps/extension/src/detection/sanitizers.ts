@@ -16,10 +16,52 @@ const STRIP_PATTERNS: RegExp[] = [
   // Subtitle suffixes: e.g. "Title - Subtitle Indonesia", "Title [Sub Indo]"
   /[-–—|:]?\s*\[?\b(?:sub(?:title)?\s+indonesia|sub\s+indo|english\s+sub|eng\s+sub)\b\]?.*$/i,
   // Site branding suffixes: e.g. "Title - Miruro", "Title | Netflix"
-  /[-–—|:]\s*(?:miruro|bilibili|iqiyi|crunchyroll|vidio|viu|hotstar|wetv|anoboy|samehadaku|otakudesu|kuramanime|loklok|rebahin|indoxxi)\b.*$/i,
+  /[-–—|:]\s*(?:miruro|bilibili|iqiyi|crunchyroll|vidio|viu|hotstar|wetv|anoboy|samehadaku|otakudesu|kuramanime|loklok|rebahin|indoxxi|lk21|layarkaca21|dramacute|bioskopkeren|gomunime|anichin|oploverz|komikcast|melongmovie|dutafilm|pahe|zero|kissasian|gogoanime|aniwave)\b.*$/i,
   // Trailing episode indicators: e.g. "- Episode 1", "Ep 01"
-  /[-–—|:]\s*(?:episode|ep)\s*\d+.*$/i,
+  /[-–—|:]\s*(?:episode|ep|eps)\s*\d+.*$/i,
 ];
+
+// Leading streaming verbs with whitespace requirement (does NOT affect words like "Watchmen")
+const LEADING_VERB_PATTERN = /^(?:watch\s+(?:online|free\s+online|free)?|nonton\s+(?:anime|streaming|gratis|film)?|streaming\s+|stream\s+|download\s+|unduh\s+)\s*/i;
+
+/**
+ * Extracts episode, season, and release year from title/heading text defensively.
+ */
+export function extractEpisodeAndSeason(text: string | undefined | null): { episode?: number; season?: number; year?: number } {
+  if (!text || typeof text !== 'string') return {};
+  const res: { episode?: number; season?: number; year?: number } = {};
+
+  // Extract year e.g. (2023) or 2024
+  const yearMatch = text.match(/\b(19\d\d|20\d\d)\b/);
+  if (yearMatch && yearMatch[1]) {
+    const y = parseInt(yearMatch[1], 10);
+    if (y >= 1900 && y <= 2100) res.year = y;
+  }
+
+  // S01E05 or Season 1 Episode 5
+  const seMatch = text.match(/\b(?:season|s)\s*(\d+)\s*[-–—|:]?\s*(?:episode|ep|eps|e)\s*(\d+)\b/i);
+  if (seMatch && seMatch[1] && seMatch[2]) {
+    const s = parseInt(seMatch[1], 10);
+    const e = parseInt(seMatch[2], 10);
+    if (Number.isSafeInteger(s) && s > 0) res.season = s;
+    if (Number.isSafeInteger(e) && e > 0) res.episode = e;
+    return res;
+  }
+
+  const epMatch = text.match(/\b(?:episode|ep|eps|e)\.?\s*(\d+)\b/i);
+  if (epMatch && epMatch[1]) {
+    const e = parseInt(epMatch[1], 10);
+    if (Number.isSafeInteger(e) && e > 0) res.episode = e;
+  }
+
+  const seasonMatch = text.match(/\b(?:season|s)\.?\s*(\d+)\b/i);
+  if (seasonMatch && seasonMatch[1]) {
+    const s = parseInt(seasonMatch[1], 10);
+    if (Number.isSafeInteger(s) && s > 0) res.season = s;
+  }
+
+  return res;
+}
 
 /**
  * Cleans a title string conservatively without deleting genuine title words.
@@ -42,6 +84,14 @@ export function sanitizeTitle(rawTitle: string | undefined | null): string {
     }
   }
 
+  // Strip leading verbs (e.g. "Watch One Piece" -> "One Piece", "Nonton One Piece" -> "One Piece")
+  if (LEADING_VERB_PATTERN.test(cleaned)) {
+    const withoutVerb = cleaned.replace(LEADING_VERB_PATTERN, '').trim();
+    if (withoutVerb.length >= 2) {
+      cleaned = withoutVerb;
+    }
+  }
+
   // Remove trailing delimiters left behind
   cleaned = cleaned.replace(/[-–—|:,;]+$/, '').trim();
 
@@ -51,6 +101,39 @@ export function sanitizeTitle(rawTitle: string | undefined | null): string {
   }
 
   return cleaned;
+}
+
+/**
+ * Comprehensive title cleaner for search/catalog queries.
+ * Strips episode numbers, video quality tags, and subtitle tags from the core title.
+ */
+export function cleanMediaTitle(rawTitle: string | undefined | null): string {
+  if (!rawTitle || typeof rawTitle !== 'string') return '';
+
+  let cleaned = sanitizeTitle(rawTitle);
+
+  // Remove common video codecs & resolutions (e.g. 1080p, 720p, BluRay, Web-DL, x264, x265)
+  cleaned = cleaned.replace(/\b(?:1080p|720p|480p|360p|4k|2160p|hd|fhd|uhd|bluray|bd|web-dl|webrip|hdrip|dvdrip|x264|x265|hevc|aac|10bit)\b/gi, '');
+
+  // Remove bracketed content (e.g. [1080p], [Sub Indo], [Batch])
+  cleaned = cleaned.replace(/\[[^\]]*\]/g, '');
+
+  // Remove episode keywords in case they were in the middle: e.g. "One Piece Episode 1120"
+  cleaned = cleaned.replace(/\b(?:season|s)\s*\d+\s*[-–—|:]?\s*(?:episode|ep|eps|e)\s*\d+\b/gi, '');
+  cleaned = cleaned.replace(/\b(?:episode|ep|eps|e)\.?\s*\d+\b/gi, '');
+  cleaned = cleaned.replace(/\b(?:season|s)\.?\s*\d+\b/gi, '');
+
+  // Remove remaining subtitle / quality markers
+  cleaned = cleaned.replace(/\b(?:sub(?:title)?\s+indo(?:nesia)?|sub\s+indo|english\s+sub(?:bed)?|eng\s+sub|raw|dub(?:bed)?|full\s+movie|movie\s+lengkap|terbaru|gratis)\b/gi, '');
+
+  // Remove non-year parentheses: e.g. "(Full Movie)" but keep "(2023)"
+  cleaned = cleaned.replace(/\((?!(?:19\d\d|20\d\d)\))[^)]*\)/g, '');
+
+  // Clean trailing/leading delimiters and whitespace
+  cleaned = cleaned.replace(/^[-–—|/•~_:,;]+/, '').replace(/[-–—|/•~_:,;]+$/, '').replace(/\s+/g, ' ').trim();
+
+  // If cleaning resulted in too short string (< 2 chars), fallback to sanitized title
+  return cleaned.length >= 2 ? cleaned : sanitizeTitle(rawTitle);
 }
 
 export interface ExtractedJsonLd {

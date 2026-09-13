@@ -20,7 +20,7 @@ export function LoginForm({ onSubmit, isLoading, errorMessage }: LoginFormProps)
 
     const validation = signInInputSchema.safeParse({ email, password });
     if (!validation.success) {
-      const firstError = validation.error.issues[0]?.message || 'Input tidak valid';
+      const firstError = validation.error.issues[0]?.message || 'Invalid input';
       setFieldError(firstError);
       return;
     }
@@ -63,7 +63,7 @@ export function LoginForm({ onSubmit, isLoading, errorMessage }: LoginFormProps)
             className="vr-input"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="nama@email.com"
+            placeholder="name@email.com"
             autoComplete="email"
             required
             disabled={isLoading}
@@ -74,7 +74,7 @@ export function LoginForm({ onSubmit, isLoading, errorMessage }: LoginFormProps)
       <div className="form-group">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <label htmlFor="vr-password" className="form-label">
-            Kata Sandi
+            Password
           </label>
           <button
             type="button"
@@ -82,7 +82,7 @@ export function LoginForm({ onSubmit, isLoading, errorMessage }: LoginFormProps)
             onClick={handleOpenForgotPassword}
             style={{ fontSize: '11px' }}
           >
-            Lupa kata sandi?
+            Forgot password?
           </button>
         </div>
         <div className="input-container">
@@ -92,7 +92,7 @@ export function LoginForm({ onSubmit, isLoading, errorMessage }: LoginFormProps)
             className="vr-input"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Masukkan kata sandi"
+            placeholder="Enter your password"
             autoComplete="current-password"
             required
             disabled={isLoading}
@@ -102,10 +102,10 @@ export function LoginForm({ onSubmit, isLoading, errorMessage }: LoginFormProps)
             type="button"
             className="toggle-password-btn"
             onClick={() => setShowPassword(!showPassword)}
-            aria-label={showPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
             tabIndex={-1}
           >
-            {showPassword ? 'Sembunyi' : 'Lihat'}
+            {showPassword ? 'Hide' : 'Show'}
           </button>
         </div>
       </div>
@@ -116,18 +116,18 @@ export function LoginForm({ onSubmit, isLoading, errorMessage }: LoginFormProps)
         disabled={isLoading || !email || !password}
         style={{ marginTop: '4px' }}
       >
-        {isLoading ? 'Memverifikasi...' : 'Masuk ke Vrate'}
+        {isLoading ? 'Verifying...' : 'Sign in to Vrate'}
       </button>
 
       <div className="auth-links" style={{ justifyContent: 'center', gap: '4px', fontSize: '12px' }}>
-        <span style={{ color: '#A3A3A3', fontSize: '11px' }}>Belum memiliki akun?</span>
+        <span style={{ color: '#A3A3A3', fontSize: '11px' }}>Don&apos;t have an account?</span>
         <button
           type="button"
           className="link-btn"
           onClick={handleOpenRegister}
           style={{ fontWeight: 600 }}
         >
-          Daftar sekarang
+          Sign up now
         </button>
       </div>
     </form>

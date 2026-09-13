@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { getPaginatedLibrary } from '@/features/library/queries/library-queries';
@@ -17,7 +18,7 @@ import { EmptyState } from '@/features/library/components/EmptyState';
 
 export const metadata: Metadata = {
   title: 'Library - Vrate',
-  description: 'Kelola dan jelajahi watchlist, tontonan aktif, dan riwayat media kamu.',
+  description: 'Manage and explore your watchlist, active watches, and media history.',
 };
 
 interface LibraryPageProps {
@@ -55,24 +56,35 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
 
   return (
     <div className="space-y-8">
-      <section className="border-b border-app-border pb-7">
+      <section className="relative overflow-hidden rounded-2xl border border-app-border/80 bg-gradient-to-b from-app-surface/90 via-app-secondary/60 to-app-bg p-6 sm:p-8 shadow-card">
         <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
           <div>
-            <p className="vr-label">Library</p>
-            <h1 className="mt-3 text-4xl font-semibold tracking-tight text-app-text sm:text-6xl">Library</h1>
-            <p className="mt-4 max-w-2xl text-sm leading-7 text-app-muted">
-              {totalCount} hasil. Kelola watchlist, progres episode, rating, dan catatan tontonanmu.
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-app-surface/80 px-3 py-1 text-[11px] font-medium text-app-muted backdrop-blur-md">
+              <span className="h-1.5 w-1.5 rounded-full bg-brand-primary" />
+              <span>Collection</span>
+            </div>
+            <h1 className="mt-3 text-3xl font-bold tracking-tight text-app-text sm:text-5xl">Library</h1>
+            <p className="mt-2 text-sm text-app-muted">
+              <strong className="font-semibold text-app-text">{totalCount}</strong> results. Manage your watchlist, progress, personal ratings, and notes.
             </p>
           </div>
-          <div className="text-xs leading-6 text-app-dim lg:max-w-xs lg:text-right">
-            Katalog TMDB dan AniList akan tersedia pada Step 5. Tidak ada data film palsu yang ditampilkan.
+          <div className="flex items-center gap-3">
+            <Link
+              href="/dashboard/discover"
+              className="vr-primary"
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              <span>Discover Media</span>
+            </Link>
           </div>
         </div>
       </section>
 
-      <section className="space-y-5" aria-label="Kontrol library">
+      <section className="space-y-4" aria-label="Library controls">
         <LibraryFilters />
-        <div className="flex flex-col gap-3 border-y border-app-border py-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-col gap-3 rounded-xl border border-app-border/70 bg-app-surface/40 p-3.5 backdrop-blur-md lg:flex-row lg:items-center lg:justify-between">
           <LibrarySearch />
           <LibrarySort />
         </div>
@@ -92,23 +104,25 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
         <div>
           {query.trim().length > 0 ? (
             <EmptyState
-              title="Tidak ada hasil yang cocok."
-              description={`Tidak ditemukan media dengan judul "${query}" dalam koleksimu. Coba kata kunci lain atau hapus pencarian.`}
-              actionLabel="Hapus pencarian"
+              title="No matching results found."
+              description={`No media found matching "${query}" in your collection. Try a different keyword or clear search.`}
+              actionLabel="Clear search"
               actionHref="/dashboard/library"
             />
           ) : status !== 'all' ? (
             <EmptyState
-              title={`Belum ada media ${formatStatusLabel(status).toLowerCase()}.`}
-              description={`Kategori ${formatStatusLabel(status).toLowerCase()} belum memiliki entri media.`}
-              actionLabel="Lihat semua status"
+              title={`No ${formatStatusLabel(status).toLowerCase()} media yet.`}
+              description={`The ${formatStatusLabel(status).toLowerCase()} category currently has no entries.`}
+              actionLabel="View all statuses"
               actionHref="/dashboard/library"
             />
           ) : (
             <EmptyState
-              title="Library kamu masih kosong."
-              description="Cari film, serial, atau anime dan mulai bangun library-mu saat fitur katalog tersedia."
-              secondaryNotice="Koleksi ini membaca data Supabase asli melalui Row Level Security."
+              title="Your library is currently empty."
+              description="Search for movies, series, or anime from TMDB and AniList to start building your personal library."
+              actionLabel="Discover Media"
+              actionHref="/dashboard/discover"
+              secondaryNotice="This collection queries authentic Supabase data secured by Row Level Security."
             />
           )}
         </div>

@@ -12,13 +12,13 @@ export function CreditsView() {
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
-          <span>Kembali ke Dashboard</span>
+          <span>Back to Dashboard</span>
         </Link>
         <h1 className="font-editorial text-3xl font-bold tracking-tight text-app-text sm:text-4xl">
-          Atribusi & Kredit Metadata
+          Attribution & Metadata Credits
         </h1>
         <p className="mt-2 text-sm text-app-muted">
-          Vrate dibangun dengan integrasi penyedia data terbuka untuk menghadirkan informasi katalog film, serial TV, dan anime yang lengkap dan mutakhir.
+          Vrate integrates with open data providers to bring you comprehensive and up-to-date catalog information for movies, TV series, and anime.
         </p>
       </div>
 
@@ -71,17 +71,13 @@ export function CreditsView() {
             <h3 className="text-base font-semibold text-app-text">The Movie Database (TMDB)</h3>
 
             <p className="text-xs text-app-muted leading-relaxed">
-              Metadata film dan serial TV pada Vrate diperoleh melalui <span className="text-app-text font-medium">The Movie Database (TMDB) API</span>.
+              Movie and TV series metadata on Vrate is sourced from <span className="text-app-text font-medium">The Movie Database (TMDB) API</span>.
             </p>
 
             {/* Official TMDB Disclaimer */}
             <div className="rounded border border-app-border bg-app-elevated p-3 text-[11px] text-app-muted leading-relaxed">
-              <p className="font-semibold text-app-text mb-1">Pemberitahuan Resmi TMDB:</p>
+              <p className="font-semibold text-app-text mb-1">Official TMDB Notice:</p>
               &ldquo;This product uses the TMDB API but is not endorsed or certified by TMDB.&rdquo;
-              <br />
-              <span className="text-app-dim">
-                (Produk ini menggunakan TMDB API tetapi tidak didukung, disponsori, atau disertifikasi oleh TMDB.)
-              </span>
             </div>
           </div>
 
@@ -92,7 +88,7 @@ export function CreditsView() {
               rel="noopener noreferrer"
               className="vr-link text-xs"
             >
-              Kunjungi themoviedb.org ↗
+              Visit themoviedb.org ↗
             </a>
           </div>
         </div>
@@ -113,12 +109,12 @@ export function CreditsView() {
             <h3 className="text-base font-semibold text-app-text">AniList GraphQL API</h3>
 
             <p className="text-xs text-app-muted leading-relaxed">
-              Seluruh data anime, termasuk judul Romaji/Inggris/Jepang, sinopsis, format episode, skor komunitas, dan cover art diperoleh dari <span className="text-app-text font-medium">AniList GraphQL API v2</span>.
+              All anime data, including Romaji/English/Japanese titles, synopses, episode counts, community scores, and cover art, is sourced from <span className="text-app-text font-medium">AniList GraphQL API v2</span>.
             </p>
 
             <div className="rounded border border-app-border bg-app-elevated p-3 text-[11px] text-app-muted leading-relaxed">
-              <p className="font-semibold text-app-text mb-1">Pemberitahuan AniList:</p>
-              Metadata dan gambar anime disediakan oleh komunitas AniList. Vrate merupakan aplikasi independen dan tidak memiliki hubungan afiliasi atau kemitraan komersial langsung dengan AniList.co.
+              <p className="font-semibold text-app-text mb-1">AniList Notice:</p>
+              Anime metadata and cover images are provided by the AniList community. Vrate is an independent project with no direct affiliation or commercial partnership with AniList.co.
             </div>
           </div>
 
@@ -129,15 +125,15 @@ export function CreditsView() {
               rel="noopener noreferrer"
               className="vr-link text-xs"
             >
-              Kunjungi anilist.co ↗
+              Visit anilist.co ↗
             </a>
           </div>
         </div>
       </div>
 
       <div className="rounded-card border border-app-border bg-app-surface/40 p-5 text-xs text-app-dim leading-relaxed">
-        <p className="font-semibold text-app-text mb-1">Hak Cipta & Kekayaan Intelektual:</p>
-        Seluruh poster, gambar latar (backdrop), dan sinopsis media adalah milik masing-masing pemegang hak cipta, distributor, produsen, dan studio produksi. Vrate menyajikan materi promosi semata-mata untuk tujuan referensi dan pencatatan pribadi pengguna.
+        <p className="font-semibold text-app-text mb-1">Copyright & Intellectual Property:</p>
+        All posters, backdrops, and synopses belong to their respective copyright holders, distributors, and production studios. Vrate presents promotional material solely for personal reference and tracking.
       </div>
     </div>
   );

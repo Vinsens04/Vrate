@@ -16,7 +16,7 @@ export function extractBearerToken(authHeader: string | null): ExtractTokenResul
   if (!authHeader) {
     return {
       success: false,
-      error: 'Header Authorization diperlukan.',
+      error: 'Authorization header required.',
       status: 401,
     };
   }
@@ -25,7 +25,7 @@ export function extractBearerToken(authHeader: string | null): ExtractTokenResul
   if (authHeader.length > 2048) {
     return {
       success: false,
-      error: 'Ukuran header Authorization melebihi batas yang diizinkan.',
+      error: 'Authorization header exceeds maximum allowed length.',
       status: 400,
     };
   }
@@ -34,7 +34,7 @@ export function extractBearerToken(authHeader: string | null): ExtractTokenResul
   if (!match || !match[1]) {
     return {
       success: false,
-      error: 'Format Authorization harus berupa Bearer <token>.',
+      error: 'Authorization format must be Bearer <token>.',
       status: 401,
     };
   }
@@ -43,7 +43,7 @@ export function extractBearerToken(authHeader: string | null): ExtractTokenResul
   if (token.length < 10) {
     return {
       success: false,
-      error: 'Token Bearer tidak valid.',
+      error: 'Invalid Bearer token.',
       status: 401,
     };
   }

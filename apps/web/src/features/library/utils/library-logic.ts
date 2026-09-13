@@ -118,22 +118,22 @@ export function calculateStatusDates(
 }
 
 /**
- * Returns human-readable Indonesian label for LibraryStatus.
+ * Returns human-readable label for LibraryStatus.
  */
 export function formatStatusLabel(status: LibraryStatus | 'all'): string {
   switch (status) {
     case 'all':
-      return 'Semua';
+      return 'All';
     case 'watchlist':
       return 'Watchlist';
     case 'watching':
-      return 'Sedang Ditonton';
+      return 'Watching';
     case 'completed':
-      return 'Selesai';
+      return 'Completed';
     case 'paused':
-      return 'Dijeda';
+      return 'Paused';
     case 'dropped':
-      return 'Dihentikan';
+      return 'Dropped';
     default:
       return status;
   }
@@ -195,48 +195,48 @@ export function formatStatusBadgeStyle(status: LibraryStatus): {
 }
 
 /**
- * Formats rating for UI display (e.g. 8.5 -> "8.5 / 10", null -> "Belum dinilai").
+ * Formats rating for UI display (e.g. 8.5 -> "8.5 / 10", null -> "Unrated").
  */
 export function formatRating(rating: number | null): string {
-  if (rating === null || rating === undefined) return 'Belum dinilai';
+  if (rating === null || rating === undefined) return 'Unrated';
   return `${Number(rating).toFixed(1)} / 10`;
 }
 
 /**
- * Formats media type label in Indonesian.
+ * Formats media type label in English.
  */
 export function formatMediaType(type: MediaType): string {
   switch (type) {
     case 'movie':
-      return 'Film';
+      return 'Movie';
     case 'series':
-      return 'Serial';
+      return 'Series';
     default:
       return type;
   }
 }
 
 /**
- * Formats duration in minutes (e.g. 142 -> "2j 22m").
+ * Formats duration in minutes (e.g. 142 -> "2h 22m").
  */
 export function formatDuration(minutes: number | null): string {
   if (!minutes || minutes <= 0) return '-';
   const hours = Math.floor(minutes / 60);
   const remaining = minutes % 60;
   if (hours === 0) return `${remaining}m`;
-  if (remaining === 0) return `${hours}j`;
-  return `${hours}j ${remaining}m`;
+  if (remaining === 0) return `${hours}h`;
+  return `${hours}h ${remaining}m`;
 }
 
 /**
- * Formats a date to Indonesian locale format (e.g. "8 September 2026").
+ * Formats a date to locale format (e.g. "September 8, 2026").
  */
 export function formatDate(isoString: string | null): string {
   if (!isoString) return '-';
   try {
     const d = new Date(isoString);
     if (isNaN(d.getTime())) return '-';
-    return d.toLocaleDateString('id-ID', {
+    return d.toLocaleDateString('en-US', {
       day: 'numeric',
       month: 'long',
       year: 'numeric',
@@ -247,7 +247,7 @@ export function formatDate(isoString: string | null): string {
 }
 
 /**
- * Formats relative time in Indonesian (e.g. "2 jam lalu", "Kemarin", "Baru saja").
+ * Formats relative time in English (e.g. "2h ago", "Yesterday", "Just now").
  */
 export function formatRelativeTime(isoString: string | null): string {
   if (!isoString) return '-';
@@ -256,16 +256,16 @@ export function formatRelativeTime(isoString: string | null): string {
     const now = new Date();
     const diffSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-    if (diffSeconds < 60) return 'Baru saja';
+    if (diffSeconds < 60) return 'Just now';
     const diffMinutes = Math.floor(diffSeconds / 60);
-    if (diffMinutes < 60) return `${diffMinutes} menit lalu`;
+    if (diffMinutes < 60) return `${diffMinutes}m ago`;
     const diffHours = Math.floor(diffMinutes / 60);
-    if (diffHours < 24) return `${diffHours} jam lalu`;
+    if (diffHours < 24) return `${diffHours}h ago`;
     const diffDays = Math.floor(diffHours / 24);
-    if (diffDays === 1) return 'Kemarin';
-    if (diffDays < 7) return `${diffDays} hari lalu`;
+    if (diffDays === 1) return 'Yesterday';
+    if (diffDays < 7) return `${diffDays}d ago`;
     const diffWeeks = Math.floor(diffDays / 7);
-    if (diffWeeks < 4) return `${diffWeeks} minggu lalu`;
+    if (diffWeeks < 4) return `${diffWeeks}w ago`;
     return formatDate(isoString);
   } catch {
     return '-';
@@ -280,7 +280,7 @@ export function mapDbEntryToViewModel(row: any): LibraryEntryItem {
   const media: MediaItem = {
     id: mediaRaw.id || row.media_id,
     mediaType: mediaRaw.media_type || 'movie',
-    title: mediaRaw.title || 'Tanpa Judul',
+    title: mediaRaw.title || 'Untitled',
     originalTitle: mediaRaw.original_title || null,
     overview: mediaRaw.overview || null,
     posterUrl: mediaRaw.poster_url || null,
@@ -345,10 +345,10 @@ export function mapDbEntryToViewModel(row: any): LibraryEntryItem {
  * Rules:
  * - Movie: returns null (never show episode badge on movie).
  * - Invalid episode data: returns null (never show E? or fake value).
- * - Serial with season (> 1): S2E1
+ * - Series with season (> 1): S2E1
  * - Anime / single season: E1
  * - With progress: "E2 • 34%" or "S2E2 • 34%"
- * - Completed: "E2 • Selesai"
+ * - Completed: "E2 • Completed"
  */
 export function formatEpisodeBadge(
   mediaType: MediaType,
@@ -374,7 +374,7 @@ export function formatEpisodeBadge(
       : `E${epNum}`;
 
   if (progress.isCompleted) {
-    return `${prefix} • Selesai`;
+    return `${prefix} • Completed`;
   }
 
   if (

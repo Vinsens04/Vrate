@@ -1,4 +1,4 @@
-﻿import type { Metadata } from 'next';
+import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 
@@ -9,9 +9,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'Vrate - Catat yang kamu tonton',
+  title: 'Vrate - Track what you watch',
   description:
-    'Satu tempat untuk menyimpan film, serial, dan anime beserta progres, rating, dan catatan pribadimu.',
+    'One place to track movies, series, and anime with progress, ratings, and personal notes.',
 };
 
 export default function RootLayout({
@@ -20,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className={`dark ${inter.variable}`}>
+    <html lang="en" className={`dark ${inter.variable}`}>
       <body className="min-h-screen bg-app-bg text-app-text antialiased selection:bg-brand-primary selection:text-app-bg">
         {children}
       </body>

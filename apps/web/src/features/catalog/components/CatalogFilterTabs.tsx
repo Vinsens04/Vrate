@@ -19,16 +19,16 @@ export function CatalogFilterTabs({
   isTmdbConfigured,
 }: CatalogFilterTabsProps) {
   const typeTabs: { id: CatalogFilterType; label: string }[] = [
-    { id: 'all', label: 'Semua' },
-    { id: 'movie', label: 'Film' },
-    { id: 'series', label: 'Serial' },
+    { id: 'all', label: 'All' },
+    { id: 'movie', label: 'Movie' },
+    { id: 'series', label: 'Series' },
     { id: 'anime', label: 'Anime' },
   ];
 
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-app-border pb-4">
       {/* Type Filter Buttons */}
-      <div className="flex flex-wrap items-center gap-1.5" role="tablist" aria-label="Filter kategori media">
+      <div className="flex flex-wrap items-center gap-1.5" role="tablist" aria-label="Filter media category">
         {typeTabs.map((tab) => {
           const isActive = currentType === tab.id;
           return (
@@ -51,7 +51,7 @@ export function CatalogFilterTabs({
 
       {/* Source Selector */}
       <div className="flex items-center gap-2 text-xs">
-        <span className="text-app-dim">Sumber:</span>
+        <span className="text-app-dim">Source:</span>
         <div className="flex items-center gap-1 rounded-btn border border-app-border bg-app-surface p-1">
           <button
             type="button"
@@ -62,7 +62,7 @@ export function CatalogFilterTabs({
                 : 'text-app-dim hover:text-app-text'
             }`}
           >
-            Semua
+            All
           </button>
           <button
             type="button"
@@ -72,11 +72,11 @@ export function CatalogFilterTabs({
                 ? 'bg-app-elevated text-emerald-400 font-medium'
                 : 'text-app-dim hover:text-app-text'
             }`}
-            title={!isTmdbConfigured ? 'TMDB API token belum dikonfigurasi' : undefined}
+            title={!isTmdbConfigured ? 'TMDB API token not configured' : undefined}
           >
             <span>TMDB</span>
             {!isTmdbConfigured && (
-              <span className="h-1.5 w-1.5 rounded-full bg-brand-warning" title="Belum dikonfigurasi" />
+              <span className="h-1.5 w-1.5 rounded-full bg-brand-warning" title="Not configured" />
             )}
           </button>
           <button

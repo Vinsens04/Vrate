@@ -86,7 +86,7 @@ export async function getAuthState(): Promise<ExtensionAuthResponse> {
       success: false,
       state: 'unconfigured',
       error:
-        'Ekstensi belum dikonfigurasi dengan Supabase URL dan Anon Key. Periksa file .env.local.',
+        'Extension is not configured with Supabase URL and Anon Key. Please check .env.local.',
     };
   }
 
@@ -95,7 +95,7 @@ export async function getAuthState(): Promise<ExtensionAuthResponse> {
     return {
       success: false,
       state: 'unconfigured',
-      error: 'Supabase client gagal diinisialisasi.',
+      error: 'Failed to initialize Supabase client.',
     };
   }
 
@@ -111,7 +111,7 @@ export async function getAuthState(): Promise<ExtensionAuthResponse> {
         return {
           success: false,
           state: 'offline',
-          error: 'Tidak dapat terhubung ke server autentikasi.',
+          error: 'Unable to connect to authentication server.',
         };
       }
 
@@ -150,7 +150,7 @@ export async function getAuthState(): Promise<ExtensionAuthResponse> {
             return {
               success: false,
               state: 'offline',
-              error: 'Tidak dapat memperbarui sesi karena jaringan terputus.',
+              error: 'Unable to refresh session due to network disconnection.',
             };
           }
 
@@ -158,7 +158,7 @@ export async function getAuthState(): Promise<ExtensionAuthResponse> {
           return {
             success: false,
             state: 'expired',
-            error: 'Sesi Anda telah berakhir. Silakan masuk kembali.',
+            error: 'Your session has expired. Please sign in again.',
           };
         }
 
@@ -174,7 +174,7 @@ export async function getAuthState(): Promise<ExtensionAuthResponse> {
         return {
           success: false,
           state: 'offline',
-          error: 'Tidak dapat terhubung ke server autentikasi.',
+          error: 'Unable to connect to authentication server.',
         };
       }
     }
@@ -187,7 +187,7 @@ export async function getAuthState(): Promise<ExtensionAuthResponse> {
       (user.user_metadata?.full_name as string) ||
       (user.user_metadata?.name as string) ||
       user.email?.split('@')[0] ||
-      'Pengguna';
+      'User';
 
     const safeUser: SafeUser = {
       id: user.id,
@@ -224,7 +224,7 @@ export async function signIn(
     return {
       success: false,
       state: 'unconfigured',
-      error: 'Konfigurasi Supabase belum lengkap pada ekstensi.',
+      error: 'Supabase configuration incomplete in extension.',
     };
   }
 
@@ -233,7 +233,7 @@ export async function signIn(
     return {
       success: false,
       state: 'unconfigured',
-      error: 'Supabase client tidak tersedia.',
+      error: 'Supabase client unavailable.',
     };
   }
 
@@ -259,7 +259,7 @@ export async function signIn(
       (user.user_metadata?.full_name as string) ||
       (user.user_metadata?.name as string) ||
       user.email?.split('@')[0] ||
-      'Pengguna';
+      'User';
 
     const safeUser: SafeUser = {
       id: user.id,

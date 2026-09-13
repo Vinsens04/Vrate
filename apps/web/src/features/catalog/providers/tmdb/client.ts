@@ -27,7 +27,7 @@ export function isTmdbConfigured(): boolean {
 function getTmdbToken(): string {
   const token = process.env.TMDB_API_READ_TOKEN;
   if (!token || !token.trim()) {
-    throw new Error('Layanan TMDB belum dikonfigurasi (TMDB_API_READ_TOKEN belum diatur).');
+    throw new Error('TMDB service is not configured (TMDB_API_READ_TOKEN is not set).');
   }
   return token.trim();
 }
@@ -77,10 +77,10 @@ async function fetchTmdbWithRetry(
   }
 
   if (lastError instanceof Error && lastError.name === 'TimeoutError') {
-    throw new Error('Permintaan ke TMDB melebihi batas waktu (timeout).');
+    throw new Error('Request to TMDB timed out.');
   }
 
-  throw new Error('Gagal terhubung ke layanan TMDB.');
+  throw new Error('Failed to connect to TMDB service.');
 }
 
 /**
@@ -100,7 +100,7 @@ export async function searchTmdb(
       available: false,
       hasNextPage: false,
       results: [],
-      error: 'TMDB API token belum dikonfigurasi.',
+      error: 'TMDB API token is not configured.',
     };
   }
 
@@ -110,7 +110,7 @@ export async function searchTmdb(
       {
         query,
         page,
-        language: 'id-ID',
+        language: 'en-US',
         include_adult: 'false',
       },
       { revalidate: 300 } // 5 minutes cache for search
@@ -122,14 +122,14 @@ export async function searchTmdb(
           available: false,
           hasNextPage: false,
           results: [],
-          error: 'Autentikasi TMDB gagal. Periksa token TMDB Anda.',
+          error: 'TMDB authentication failed. Please check your TMDB token.',
         };
       }
       return {
         available: false,
         hasNextPage: false,
         results: [],
-        error: `Layanan TMDB mengembalikan status ${response.status}.`,
+        error: `TMDB service returned status ${response.status}.`,
       };
     }
 
@@ -141,7 +141,7 @@ export async function searchTmdb(
         available: false,
         hasNextPage: false,
         results: [],
-        error: 'Format data respon TMDB tidak sesuai.',
+        error: 'Invalid TMDB response data format.',
       };
     }
 
@@ -157,7 +157,7 @@ export async function searchTmdb(
       results: items,
     };
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Terjadi kesalahan saat memanggil TMDB.';
+    const message = err instanceof Error ? err.message : 'An error occurred while calling TMDB.';
     return {
       available: false,
       hasNextPage: false,
@@ -173,31 +173,31 @@ export async function searchTmdb(
 export async function getTmdbMovieDetail(id: number | string): Promise<CatalogMedia> {
   const numericId = typeof id === 'number' ? id : parseInt(id, 10);
   if (isNaN(numericId) || numericId <= 0) {
-    throw new Error('ID film TMDB tidak valid.');
+    throw new Error('Invalid TMDB movie ID.');
   }
 
   const response = await fetchTmdbWithRetry(`/movie/${numericId}`, {
-    language: 'id-ID',
+    language: 'en-US',
   });
 
   if (response.status === 404) {
-    throw new Error('Film tidak ditemukan di TMDB.');
+    throw new Error('Movie not found on TMDB.');
   }
 
   if (!response.ok) {
-    throw new Error(`Gagal mengambil detail film dari TMDB (status ${response.status}).`);
+    throw new Error(`Failed to fetch movie details from TMDB (status ${response.status}).`);
   }
 
   const json = await response.json();
   const parsed = tmdbMovieDetailResponseSchema.safeParse(json);
 
   if (!parsed.success) {
-    throw new Error('Format respon detail film TMDB tidak valid.');
+    throw new Error('Invalid TMDB movie detail response format.');
   }
 
   let movieData = parsed.data;
 
-  // Fallback to en-US overview if id-ID overview is completely empty
+  // Fallback to en-US overview if initial overview is completely empty
   if (!movieData.overview || !movieData.overview.trim()) {
     try {
       const enRes = await fetchTmdbWithRetry(`/movie/${numericId}`, {
@@ -224,31 +224,31 @@ export async function getTmdbMovieDetail(id: number | string): Promise<CatalogMe
 export async function getTmdbTvDetail(id: number | string): Promise<CatalogMedia> {
   const numericId = typeof id === 'number' ? id : parseInt(id, 10);
   if (isNaN(numericId) || numericId <= 0) {
-    throw new Error('ID serial TMDB tidak valid.');
+    throw new Error('Invalid TMDB series ID.');
   }
 
   const response = await fetchTmdbWithRetry(`/tv/${numericId}`, {
-    language: 'id-ID',
+    language: 'en-US',
   });
 
   if (response.status === 404) {
-    throw new Error('Serial TV tidak ditemukan di TMDB.');
+    throw new Error('TV series not found on TMDB.');
   }
 
   if (!response.ok) {
-    throw new Error(`Gagal mengambil detail serial dari TMDB (status ${response.status}).`);
+    throw new Error(`Failed to fetch series details from TMDB (status ${response.status}).`);
   }
 
   const json = await response.json();
   const parsed = tmdbTvDetailResponseSchema.safeParse(json);
 
   if (!parsed.success) {
-    throw new Error('Format respon detail serial TMDB tidak valid.');
+    throw new Error('Invalid TMDB series detail response format.');
   }
 
   let tvData = parsed.data;
 
-  // Fallback to en-US overview if id-ID overview is completely empty
+  // Fallback to en-US overview if initial overview is completely empty
   if (!tvData.overview || !tvData.overview.trim()) {
     try {
       const enRes = await fetchTmdbWithRetry(`/tv/${numericId}`, {

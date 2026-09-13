@@ -124,37 +124,37 @@ test('Extension Schemas: safeUserSchema & extensionAuthResponseSchema sanitize u
 });
 
 // ------------------------------------------------------------------------------
-// Test Suite 2: Error Mapping (Bahasa Indonesia & No Leaks)
+// Test Suite 2: Error Mapping (English & No Leaks)
 // ------------------------------------------------------------------------------
 
 test('Error Mapping: mapExtensionAuthError translates error messages without exposing internals', () => {
   assert.equal(
     mapExtensionAuthError(new Error('Invalid login credentials')),
-    'Email atau kata sandi tidak valid.'
+    'Invalid email or password.'
   );
   assert.equal(
     mapExtensionAuthError(new Error('Email not confirmed')),
-    'Email belum diverifikasi. Silakan periksa kotak masuk email Anda untuk melakukan konfirmasi.'
+    'Email not verified. Please check your inbox to confirm your email.'
   );
   assert.equal(
     mapExtensionAuthError(new Error('Rate limit exceeded: too many requests')),
-    'Terlalu banyak percobaan masuk. Silakan tunggu beberapa saat sebelum mencoba lagi.'
+    'Too many sign-in attempts. Please wait a moment before trying again.'
   );
   assert.equal(
     mapExtensionAuthError(new Error('Failed to fetch')),
-    'Tidak dapat terhubung ke server. Periksa koneksi internet Anda.'
+    'Unable to connect to the server. Please check your internet connection.'
   );
   assert.equal(
     mapExtensionAuthError(new Error('Token is expired or invalid')),
-    'Sesi Anda telah berakhir. Silakan masuk kembali.'
+    'Your session has expired. Please sign in again.'
   );
   assert.equal(
     mapExtensionAuthError(new Error('Database syntax error at line 42 with table users')),
-    'Gagal melakukan autentikasi. Silakan periksa kembali data Anda.'
+    'Authentication failed. Please check your credentials.'
   );
   assert.equal(
     mapExtensionAuthError(null),
-    'Terjadi kesalahan tidak dikenal.'
+    'An unknown error occurred.'
   );
 });
 
